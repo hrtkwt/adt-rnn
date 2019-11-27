@@ -16,5 +16,7 @@ if __name__=='__main__':
     y_train_all = load_target(target_name="pesu")
 
     print(X_train_all.shape)
+    print(X_test_all.shape)
+    print(y_train_all.shape)
 
 
