@@ -1,0 +1,14 @@
+{
+    "date": "pesu",
+    "params": {
+        "n_input": 1025,
+        "n_hidden": 200, 
+        "n_out": 3,
+        "activation": "sigmoid",
+        "optimizer": "adam",
+        "loss": "binary_crossentropy",
+        "metrics": "accuracy",
+        "batch_size": 32,
+        "epochs": 1
+    }
+}
