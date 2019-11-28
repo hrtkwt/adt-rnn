@@ -1,23 +1,36 @@
 import numpy as np
 
 
-def load_datasets(feats):
-    if feats == 'pesu':
-        rand_train = np.random.randn(1000, 100, 1025)
-        rand_test = np.random.randn(200, 100, 1025)
-        return rand_train, rand_test
+def load_train_data(date):
+    if date == 'pesu':
+        rand = np.random.randn(1000, 100, 1025)
+        return rand
 
 
-def load_target(target_name):
-    if target_name == 'pesu':
-        rand = np.random.randn(1000)
+def load_test_data(date):
+    if date == 'pesu':
+        rand = np.random.randn(200, 100, 1025)
+        return rand
+
+
+def load_train_target(date):
+    if date == 'pesu':
+        rand = np.random.randn(1000, 3)
+        return rand
+
+def load_test_target(date):
+    if date == 'pesu':
+        rand = np.random.randn(200, 3)
         return rand
 
 
 if __name__ == '__main__':
-    X_train_all, X_test_all = load_datasets(feats="pesu")
-    y_train_all = load_target(target_name="pesu")
+    X_train = load_train_data(date="pesu")
+    X_test = load_test_data(date="pesu")
+    Y_train = load_train_target(date="pesu")
+    Y_test = load_test_target(date="pesu")
 
-    print(X_train_all.shape)
-    print(X_test_all.shape)
-    print(y_train_all.shape)
+    print(X_train.shape)
+    print(X_test.shape)
+    print(Y_train.shape)
+    print(Y_test.shape)
