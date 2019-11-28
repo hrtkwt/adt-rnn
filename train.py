@@ -10,10 +10,8 @@ Y_train_all = load_target(target_name="")
 
 rnn_params = ""
 
-y_preds = []
-models = []
-
 kf = KFold(n_splits=3, random_state=0)
+
 for train_index, valid_index in kf.split(X_train_all):
 
     X_train, X_valid = X_train_all[train_index, :], X_train_all[valid_index, :]
