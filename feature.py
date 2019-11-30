@@ -1,19 +1,36 @@
 import random
-import argparse
-import json
+
 import numpy as np
 import datetime
+import logging
+import os
+import sys
+
+sys.path.append("..")
 
 from utils import data
 
+print(type(data))
+
+sys.exit()
+
+
+
+# make save dir from current time
+now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+os.makedirs(f'./feature/{now}')
+
+# set logging
+logging.basicConfig(
+    filename=f'./feature/{now}/log_{now}.log',
+    level=logging.INFO
+    )
+logging.info(f'./feature/{now}/log_{now}.log')
+
 
 # load parameter
-parser = argparse.ArgumentParser()
-parser.add_argument('--config', default='./configs/feature.json')
-options = parser.parse_args()
-config = json.load(open(options.config))
-
-print(config)
+config = get_conf("feature")
+logging.info(config)
 
 def train_test_list():
     namelist = data.make_namelist()
@@ -23,21 +40,28 @@ def train_test_list():
 
     return trainlist, testlist
 
+def pdd3(arr):
+    arr = data.prepro(arr)
+    arr = np.abs(arr - arr.mean())
+    arr = data.apply_maxmin(arr)
+
+    return arr
+
 trainlist, testlist = train_test_list()
 
-X_a_train = []
-target_train = []
+# make train dataset
+
+X_a_train = dict()
+target_train = dict()
 
 for name in trainlist:
-    print(name)
+    logging.info(name)
     
     y = data.load_audio(name, inst="#MIX")
     specs = data.get_spec(y)
     
     waves = data.smooth_specs(**specs)
-    waves["pdd2"] = data.prepro(waves["pdd2"])
-    waves["pdd3"] = np.abs(waves["pdd2"] - waves["pdd2"].mean())
-    waves["pdd3"] = data.apply_maxmin(waves["pdd3"])
+    waves["pdd3"] = pdd3(waves["pdd2"])
     
 #     show_specs(**specs)
 #     show_waves(**waves)
@@ -52,31 +76,29 @@ for name in trainlist:
     C_a = data.make_segments(C_a, 1, 100)
     targets = data.make_segments(targets, 1, 100)[:,-1,:]
     
-    print(C_a.shape)
-    print(targets.shape)
+    logging.info(C_a.shape)
+    logging.info(targets.shape)
     
-    X_a_train.extend(C_a)
-    target_train.extend(targets)
+    X_a_train[name] = C_a
+    target_train[name] = targets
 
-X_a_train = np.array(X_a_train)
-target_train = np.array(target_train)
+print(X_a_train)
+print(target_train)
 
-print(X_a_train.shape)
-print(target_train.shape)
 
-X_a_test = []
-target_test = []
+# make test dataset
+
+X_a_test = dict()
+target_test = dict()
 
 for name in testlist:
-    print(name)
+    logging.info(name)
     
     y = data.load_audio(name, inst="#MIX")
     specs = data.get_spec(y)
     
     waves = data.smooth_specs(**specs)
-    waves["pdd2"] = data.prepro(waves["pdd2"])
-    waves["pdd3"] = np.abs(waves["pdd2"] - waves["pdd2"].mean())
-    waves["pdd3"] = data.apply_maxmin(waves["pdd3"])
+    waves["pdd3"] = pdd3(waves["pdd2"])
     
 #     show_specs(**specs)
 #     show_waves(**waves)
@@ -90,18 +112,26 @@ for name in testlist:
 #    C_a = data.make_segments(C_a, 1, 100)
 #    targets = data.make_segments(targets, 1, 100)[:,-1,:]
     
-    print(C_a.shape)
-    print(targets.shape)
+    logging.info(C_a.shape)
+    logging.info(targets.shape)
     
-    X_a_test.extend(C_a)
-    target_test.extend(targets)
+    X_a_test[name] = C_a
+    target_test[name] = targets
     
-X_a_test = np.array(X_a_test)
-target_test = np.array(target_test)
+print(X_a_test)
+print(target_test)
 
-print(X_a_test.shape)
-print(target_test.shape)
 
-now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-print(now)
+# save
+def save(name, arr):
 
+    path = os.path.join("features", now, name)
+
+    np.save(path, arr)
+
+
+save("X_a_train", X_a_train)
+save("target_train", target_train)
+
+save("X_a_test", X_a_test)
+save("target_test", target_test)
