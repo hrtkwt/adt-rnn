@@ -6,24 +6,20 @@ import logging
 import os
 import sys
 
-from utils import data
-
-print(type(data))
-
-sys.exit()
-
+from lib import data
+from lib import get_conf
 
 
 # make save dir from current time
 now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-os.makedirs(f'./feature/{now}')
+os.makedirs(f'./features/{now}')
 
 # set logging
 logging.basicConfig(
-    filename=f'./feature/{now}/log_{now}.log',
+    filename=f'./features/{now}/feature_{now}.log',
     level=logging.INFO
     )
-logging.info(f'./feature/{now}/log_{now}.log')
+logging.info(f'./features/{now}/feature_{now}.log')
 
 
 # load parameter

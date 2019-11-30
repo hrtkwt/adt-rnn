@@ -1,6 +1,6 @@
 {
-    "date": "pesu",
-    "params": {
+    "feature_date": "pesu",
+    "train_params": {
         "n_input": 1025,
         "n_hidden": 200, 
         "n_out": 3,
@@ -9,6 +9,6 @@
         "loss": "binary_crossentropy",
         "metrics": "accuracy",
         "batch_size": 32,
-        "epochs": 1
+        "epochs": 5
     }
 }
