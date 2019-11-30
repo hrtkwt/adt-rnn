@@ -7,17 +7,14 @@ from lib.rnn import load_weights, pred
 from lib.evalutil import peaks, accuracies
 
 # load model
-
 config = get_conf("eval")
 print(config)
 
-weights = load_weights(**config["weights_param"])
+weights = load_weights(**config["weights_params"])
 
-X_test = load_test_data(**config["feature_param"])
-Y_test = load_test_target(**config["feature_param"])
-
-print(X_test.shape)
-print(Y_test.shape)
+# load test data
+X_test = load_test_data(**config["feature_params"])
+Y_test = load_test_target(**config["feature_params"])
 
 # pred
 Y_pred = pred(X_test, weights)
@@ -25,8 +22,8 @@ Y_pred = pred(X_test, weights)
 # peak_picking
 Y_peak = peaks(Y_pred, **config["peak_params"])
 
-metrics_params = {"pre_tolerance": 3, "post_tolerance": 3}
-result = accuracies(Y_test, Y_peak, **metrics_params)
+# eval
+result = accuracies(Y_test, Y_peak, **config["metrics_params"])
 
 print(result)
 

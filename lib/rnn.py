@@ -1,5 +1,7 @@
 import tensorflow as tf
-from tensorflow import keras
+import numpy as np
+import librosa
+import pandas as pd
 
 
 def create_model(params):
@@ -17,15 +19,19 @@ def create_model(params):
 
     return model
 
-def load_model(train_date, fold, epoch):
-    cp_path = f"cp/{train_date}/{fold}/cp-{epoch:04d}"
-    model = tf.keras.models.load_model(cp_path)
-    return model
 
 def load_weights(train_date, fold, epoch):
+
+    def load_model(train_date, fold, epoch):
+        cp_path = f"cp/{train_date}/{fold}/cp-{epoch:04d}"
+        model = tf.keras.models.load_model(cp_path)
+        return model
+
+
     model = load_model(train_date, fold, epoch)
     weights = [w.numpy() for w in model.weights]
     return weights
+
 
 def train(X_train, X_valid, Y_train, Y_valid, params, now, fold):
 
@@ -35,7 +41,7 @@ def train(X_train, X_valid, Y_train, Y_valid, params, now, fold):
     # set callbacks
     ## tb_callback
     logdir = f"logs/{now}/{fold}"
-    tb_callback = keras.callbacks.TensorBoard(log_dir=logdir)
+    tb_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
     ## cp_callback
     cp_path = f"cp/{now}/{fold}" + "/cp-{epoch:04d}.ckpt"
@@ -55,9 +61,6 @@ def train(X_train, X_valid, Y_train, Y_valid, params, now, fold):
         validation_data=(X_valid, Y_valid)
         )
 
-import numpy as np
-import librosa
-import pandas as pd
 
 def pred(X, weights):
     

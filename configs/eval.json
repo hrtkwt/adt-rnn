@@ -1,8 +1,8 @@
 {
-    "feature_param": {
+    "feature_params": {
         "date": "pesu"
     },
-    "weights_param": {
+    "weights_params": {
         "train_date": "20191130-172056",
         "fold": 0,
         "epoch": 2
@@ -14,5 +14,9 @@
         "post_avg": 3,
         "delta": 0.05,
         "wait": 2
+    },
+    "metrics_params": {
+        "pre_tolerance": 3,
+        "post_tolerance": 3
     }
 }
