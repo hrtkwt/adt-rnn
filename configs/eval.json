@@ -1,10 +1,8 @@
 {
-    "feature_params": {
-        "date": "pesu"
-    },
-    "weights_params": {
-        "train_date": "20191130-172056",
-        "fold": 0,
+    "feature_date": "20191130-195033",
+    "weights": {
+        "train_date": "20191130-204419",
+        "fold": 1,
         "epoch": 2
     },
     "peak_params": {

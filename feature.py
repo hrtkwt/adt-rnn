@@ -44,11 +44,12 @@ def pdd3(arr):
 trainlist, testlist = train_test_list()
 
 # make train dataset
+logging.info("-----train-----")
 
-X_a_train = dict()
-target_train = dict()
+X_train = dict()
+Y_train = dict()
 
-for name in trainlist:
+for name in trainlist[:2]:
     logging.info(name)
     
     y = data.load_audio(name, inst="#MIX")
@@ -73,19 +74,16 @@ for name in trainlist:
     logging.info(C_a.shape)
     logging.info(targets.shape)
     
-    X_a_train[name] = C_a
-    target_train[name] = targets
-
-print(X_a_train)
-print(target_train)
-
+    X_train[name] = C_a
+    Y_train[name] = targets
 
 # make test dataset
+logging.info("-----test-----")
 
-X_a_test = dict()
-target_test = dict()
+X_test = dict()
+Y_test = dict()
 
-for name in testlist:
+for name in testlist[:2]:
     logging.info(name)
     
     y = data.load_audio(name, inst="#MIX")
@@ -109,13 +107,9 @@ for name in testlist:
     logging.info(C_a.shape)
     logging.info(targets.shape)
     
-    X_a_test[name] = C_a
-    target_test[name] = targets
+    X_test[name] = C_a
+    Y_test[name] = targets
     
-print(X_a_test)
-print(target_test)
-
-
 # save
 def save(name, arr):
 
@@ -124,8 +118,8 @@ def save(name, arr):
     np.save(path, arr)
 
 
-save("X_a_train", X_a_train)
-save("target_train", target_train)
+save("X_train", X_train)
+save("Y_train", Y_train)
 
-save("X_a_test", X_a_test)
-save("target_test", target_test)
+save("X_test", X_test)
+save("Y_test", Y_test)

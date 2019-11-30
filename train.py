@@ -5,11 +5,11 @@ import json
 import datetime
 import logging
 
+import numpy as np
 from sklearn.model_selection import KFold
 
-from lib.data import load_train_data, load_train_target
-from lib.rnn import train
 from lib import get_conf, save_conf
+from lib.rnn import train
 
 # make save dir from current time
 now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -27,10 +27,24 @@ config = get_conf("train")
 logging.info(config)
 save_conf(config, f'./logs/{now}/feature.json')
 
+feature_date = config["feature_date"]
+
+def expand_dictvalues(a_dict):
+
+    values = list(a_dict.values())
+
+    result = values[0]
+    for val in values[1:]:
+        result = np.append(result, val, axis=0)
+    
+    return result
 
 # load dataset
-X_train_all = load_train_data(date=config["feature_date"])
-Y_train_all = load_train_target(date=config["feature_date"])
+X_train_dict = np.load(f"features/{feature_date}/X_train.npy", allow_pickle=True)[()]
+Y_train_dict = np.load(f"features/{feature_date}/Y_train.npy", allow_pickle=True)[()]
+
+X_train_all = expand_dictvalues(X_train_dict)
+Y_train_all = expand_dictvalues(Y_train_dict)
 
 
 kf = KFold(n_splits=config["train_params"]["n_folds"], random_state=0)

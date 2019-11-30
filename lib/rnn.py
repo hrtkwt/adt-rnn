@@ -44,10 +44,10 @@ def train(X_train, X_valid, Y_train, Y_valid, params, now, fold):
     tb_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
     ## cp_callback
-    cp_path = f"cp/{now}/{fold}" + "/cp-{epoch:04d}.ckpt"
+    cp_path = f"cp/{now}/{fold}" + "/cp-{epoch:04d}"
     cp_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=cp_path,
-        save_weights_only=True,
+        save_weights_only=False,
         verbose=1
         )
 

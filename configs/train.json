@@ -1,5 +1,5 @@
 {
-    "feature_date": "pesu",
+    "feature_date": "20191130-195033",
     "train_params": {
         "n_input": 1025,
         "n_hidden": 200, 
