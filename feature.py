@@ -49,7 +49,7 @@ logging.info("-----train-----")
 X_train = dict()
 Y_train = dict()
 
-for name in trainlist[:2]:
+for name in trainlist:
     logging.info(name)
     
     y = data.load_audio(name, inst="#MIX")
@@ -83,7 +83,7 @@ logging.info("-----test-----")
 X_test = dict()
 Y_test = dict()
 
-for name in testlist[:2]:
+for name in testlist:
     logging.info(name)
     
     y = data.load_audio(name, inst="#MIX")

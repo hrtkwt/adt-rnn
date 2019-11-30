@@ -22,8 +22,8 @@ Y_test_dict = np.load(f"features/{feature_date}/Y_test.npy", allow_pickle=True)[
 print(X_test_dict.keys())
 print(Y_test_dict.keys())
 
-X_test = X_test_dict["RealDrum01_07"]
-Y_test = X_test_dict["RealDrum01_07"]
+X_test = X_test_dict["RealDrum01_01"]
+Y_test = X_test_dict["RealDrum01_01"]
 
 # pred
 Y_pred = pred(X_test, weights)
