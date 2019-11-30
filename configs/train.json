@@ -9,6 +9,7 @@
         "loss": "binary_crossentropy",
         "metrics": "accuracy",
         "batch_size": 32,
-        "epochs": 5
+        "epochs": 3,
+        "n_folds": 2
     }
 }

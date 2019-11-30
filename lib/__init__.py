@@ -9,3 +9,8 @@ def get_conf(name):
     config = json.load(open(options.config))
 
     return config
+
+def save_conf(config, path):
+    with open(path, 'w') as fp:
+        json.dump(config, fp)
+

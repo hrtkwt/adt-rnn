@@ -194,7 +194,7 @@ def load_train_data(date):
 
 def load_test_data(date):
     if date == 'pesu':
-        rand = np.random.randn(200, 100, 1025)
+        rand = np.random.randn(200, 1025)
         return rand
 
 

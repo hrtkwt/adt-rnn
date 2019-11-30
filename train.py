@@ -9,7 +9,7 @@ from sklearn.model_selection import KFold
 
 from lib.data import load_train_data, load_train_target
 from lib.rnn import train
-from lib import get_conf
+from lib import get_conf, save_conf
 
 # make save dir from current time
 now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -25,13 +25,15 @@ logging.info(f'./logs/{now}/train_{now}.log')
 # load parameter
 config = get_conf("train")
 logging.info(config)
+save_conf(config, f'./logs/{now}/feature.json')
+
 
 # load dataset
 X_train_all = load_train_data(date=config["feature_date"])
 Y_train_all = load_train_target(date=config["feature_date"])
 
 
-kf = KFold(n_splits=3, random_state=0)
+kf = KFold(n_splits=config["train_params"]["n_folds"], random_state=0)
 
 for k, (train_index, valid_index) in enumerate(kf.split(X_train_all)):
 
