@@ -6,8 +6,6 @@ import logging
 import os
 import sys
 
-sys.path.append("..")
-
 from utils import data
 
 print(type(data))
