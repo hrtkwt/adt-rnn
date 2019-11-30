@@ -1,9 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
 
-def get_ckpt_dir(train_date, fold, epoch):
-    
-
 
 def create_model(params):
     # model
