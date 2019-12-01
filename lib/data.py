@@ -1,10 +1,9 @@
-import librosa
-import librosa.display
-
+import os
 import xml.etree.ElementTree as ET
 
 import numpy as np
-import os
+import librosa
+import librosa.display
 
 
 def make_namelist():
@@ -97,7 +96,7 @@ def down_target(target):
     return target_down
 
 
-def get_spec(y):
+def get_specs(y):
 
     C = librosa.core.stft(
         y,
@@ -128,7 +127,7 @@ def get_spec(y):
     return {"a": C_a, "p": C_p, "up": C_up, "pd": C_pd, "pdd": C_pdd, "pdd2": C_pdd2}
 
 
-def make_segments(arr, seg_step, seg_width):
+def make_segments(arr, seg_width, seg_step):
     t, n_bins = arr.shape
 
     # padding (might have an issue)
@@ -176,6 +175,14 @@ def smooth_specs(**kwargs):
         out[name] = C
 
     return out
+
+
+def pdd3(arr):
+    arr = prepro(arr)
+    arr = np.abs(arr - arr.mean())
+    arr = apply_maxmin(arr)
+
+    return arr
 
 
 def prepro(y):

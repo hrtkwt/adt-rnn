@@ -8,3 +8,4 @@ logs
 configs
 .ipynb_checkpoints
 .mypy_cache
+nohup.out

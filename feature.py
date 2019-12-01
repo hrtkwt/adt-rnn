@@ -6,7 +6,16 @@ import logging
 import os
 import json
 
-from lib import data
+from lib.data import (
+    make_namelist,
+    load_audio,
+    get_specs,
+    get_targets,
+    smooth_specs,
+    make_segments,
+    pdd3,
+)
+
 
 # make save dir from current time
 now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -16,31 +25,29 @@ os.makedirs(f"./features/{now}")
 logging.basicConfig(filename=f"./features/{now}/feature_{now}.log", level=logging.INFO)
 logging.info(f"./features/{now}/feature_{now}.log")
 
-
 # load parameter
 with open("configs/feature.json") as f:
     config = json.load(f)
 logging.info(config)
 
-
-def train_test_list():
-    namelist = data.make_namelist()
-
-    testlist = random.sample(namelist, 4)
-    trainlist = list(set(namelist) - set(testlist))
-
-    return trainlist, testlist
+# make train test namelist
+namelist = make_namelist()
+testlist = random.sample(namelist, 4)
+trainlist = list(set(namelist) - set(testlist))
 
 
-def pdd3(arr):
-    arr = data.prepro(arr)
-    arr = np.abs(arr - arr.mean())
-    arr = data.apply_maxmin(arr)
+def feature(name):
 
-    return arr
+    y = load_audio(name, inst="#MIX")
+    specs = get_specs(y)
 
+    waves = smooth_specs(**specs)
+    waves["pdd3"] = pdd3(waves["pdd2"])
 
-trainlist, testlist = train_test_list()
+    targets = get_targets(name).T
+
+    return specs["a"], targets
+
 
 # make train dataset
 logging.info("-----train-----")
@@ -51,30 +58,15 @@ Y_train = dict()
 for name in trainlist:
     logging.info(name)
 
-    y = data.load_audio(name, inst="#MIX")
-    specs = data.get_spec(y)
+    X, Y = feature(name)
+    X = make_segments(X, 100, 1)
+    Y = make_segments(Y, 100, 1)[:, -1, :]
 
-    waves = data.smooth_specs(**specs)
-    waves["pdd3"] = pdd3(waves["pdd2"])
+    logging.info(X.shape)
+    logging.info(Y.shape)
 
-    #     show_specs(**specs)
-    #     show_waves(**waves)
-
-    #     show_spec(specs["a"], "a")
-    #     show_wave(waves["pdd3"], "pdd3")
-
-    C_a = specs["a"]
-    #    pdd3 = waves["pdd3"][:, np.newaxis]
-    targets = data.get_targets(name).T
-
-    C_a = data.make_segments(C_a, 1, 100)
-    targets = data.make_segments(targets, 1, 100)[:, -1, :]
-
-    logging.info(C_a.shape)
-    logging.info(targets.shape)
-
-    X_train[name] = C_a
-    Y_train[name] = targets
+    X_train[name] = X
+    Y_train[name] = Y
 
 # make test dataset
 logging.info("-----test-----")
@@ -85,36 +77,19 @@ Y_test = dict()
 for name in testlist:
     logging.info(name)
 
-    y = data.load_audio(name, inst="#MIX")
-    specs = data.get_spec(y)
+    X, Y = feature(name)
 
-    waves = data.smooth_specs(**specs)
-    waves["pdd3"] = pdd3(waves["pdd2"])
+    logging.info(X.shape)
+    logging.info(Y.shape)
 
-    #     show_specs(**specs)
-    #     show_waves(**waves)
-
-    #     show_spec(specs["a"], "a")
-    #     show_wave(waves["pdd3"], "pdd3")
-
-    C_a = specs["a"]
-    targets = data.get_targets(name).T
-
-    #    C_a = data.make_segments(C_a, 1, 100)
-    #    targets = data.make_segments(targets, 1, 100)[:,-1,:]
-
-    logging.info(C_a.shape)
-    logging.info(targets.shape)
-
-    X_test[name] = C_a
-    Y_test[name] = targets
+    X_test[name] = X
+    Y_test[name] = Y
 
 
 # save
 def save(name, arr):
 
     path = os.path.join("features", now, name)
-
     np.save(path, arr)
 
 

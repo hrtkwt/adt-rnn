@@ -29,7 +29,7 @@ with open(f"./logs/{now}/train.json", "w") as f:
 feature_date = config["feature_date"]
 
 X_train_dict = np.load(f"features/{feature_date}/X_train.npy", allow_pickle=True)[()]
-Y_train_dict = np.load(f"features/{feature_date}/X_train.npy", allow_pickle=True)[()]
+Y_train_dict = np.load(f"features/{feature_date}/Y_train.npy", allow_pickle=True)[()]
 
 
 def expand_dictvalues(a_dict):
