@@ -66,7 +66,7 @@ def pred(X, Wh, Wr, bh, Wo, bo):
 
     def feed_forward(x, h_):
         zh = np.dot(x, Wh) + np.dot(h_, Wr) + bh
-        h = np.tanh(zh)
+        h = sigmoid(zh)
 
         zo = np.dot(h, Wo) + bo
         y = sigmoid(zo)

@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 from lib.rnn import load_weights, pred
-from lib.evalutil import peaks, accuracies
+from lib.evalutil import peaks, accuracies, get_result_table
 
 # load model
 with open("configs/eval.json") as f:
@@ -19,16 +19,32 @@ X_test_dict = X_test_dict[()]
 Y_test_dict = np.load(f"features/{feature_date}/Y_test.npy", allow_pickle=True)
 Y_test_dict = Y_test_dict[()]
 
-X_test = X_test_dict["RealDrum01_01"]
-Y_test = Y_test_dict["RealDrum01_01"]
 
-# pred
-Y_pred = pred(X_test, *weights)
+def eval(name):
 
-# peak_picking
-Y_peak = peaks(Y_pred, **config["peak_params"])
+    X_test = X_test_dict[name]
+    Y_test = Y_test_dict[name]
 
-# eval
-result = accuracies(Y_test, Y_peak, **config["metrics_params"])
+    # pred
+    Y_pred = pred(X_test, *weights)
 
-print(result)
+    # peak_picking
+    Y_peak = peaks(Y_pred, **config["peak_params"])
+
+    # eval
+    result = accuracies(Y_test, Y_peak, **config["metrics_params"])
+
+    return result
+
+
+test_names = X_test_dict.keys()
+
+result_table = get_result_table(test_names)
+
+print(result_table)
+
+for name in test_names:
+    result = eval(name)
+    result_table.loc[name] = result
+
+print(result_table)
