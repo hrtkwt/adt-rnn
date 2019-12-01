@@ -23,11 +23,14 @@ os.makedirs(f"./features/{now}")
 
 # set logging
 logging.basicConfig(filename=f"./features/{now}/feature_{now}.log", level=logging.INFO)
-logging.info(f"./features/{now}/feature_{now}.log")
 
-# load parameter
+# load and save config
 with open("configs/feature.json") as f:
     config = json.load(f)
+
+with open(f"./features/{now}/feature.json", "w") as f:
+    json.dump(config, f)
+
 logging.info(config)
 
 # make train test namelist
@@ -46,7 +49,10 @@ def feature(name):
 
     targets = get_targets(name).T
 
-    return specs["a"], targets
+    X = specs["a"]
+    Y = targets
+
+    return X, Y
 
 
 # make train dataset

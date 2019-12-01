@@ -1,8 +1,19 @@
 import numpy as np
+import tensorflow as tf
 import librosa
 import librosa.display
 import pandas as pd
 import matplotlib.pyplot as plt
+
+
+def get_weights(cp_path):
+    def load_model(cp_path):
+        model = tf.keras.models.load_model(cp_path)
+        return model
+
+    model = load_model(cp_path)
+    weights = [w.numpy() for w in model.weights]
+    return weights
 
 
 def peak_picking(activation, pre_max, post_max, pre_avg, post_avg, delta, wait):
