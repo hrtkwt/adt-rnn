@@ -35,7 +35,7 @@ def peaks(Y_activations, **kwargs):
     return Y_peak
 
 
-def accuracy(Y_annotation, Y_pred, pre_tolerance, post_tolerance, dbg=False):
+def accuracy(Y_annotation, Y_pred, pre_tolerance, post_tolerance):
     """
     Variables
     ----------
@@ -92,7 +92,7 @@ def accuracy(Y_annotation, Y_pred, pre_tolerance, post_tolerance, dbg=False):
     recall = tp / (tp + fn) if (tp + fn) != 0 else np.nan
     fmeasure = 2 * tp / (2 * tp + fp + fn) if (2 * tp + fp + fn) != 0 else np.nan
 
-    if dbg is True:
+    if False:
         print("tp", tp)
         print("fp", fp)
         print("fn", fn)

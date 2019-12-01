@@ -20,7 +20,6 @@ logging.info(f"./features/{now}/feature_{now}.log")
 # load parameter
 with open("configs/feature.json") as f:
     config = json.load(f)
-
 logging.info(config)
 
 

@@ -20,17 +20,6 @@ def create_model(params):
     return model
 
 
-def load_weights(train_date, fold, epoch):
-    def load_model(train_date, fold, epoch):
-        cp_path = f"cp/{train_date}/{fold}/cp-{epoch:04d}"
-        model = tf.keras.models.load_model(cp_path)
-        return model
-
-    model = load_model(train_date, fold, epoch)
-    weights = [w.numpy() for w in model.weights]
-    return weights
-
-
 def train(X_train, X_valid, Y_train, Y_valid, params, now, fold):
 
     # model
@@ -58,6 +47,17 @@ def train(X_train, X_valid, Y_train, Y_valid, params, now, fold):
     )
 
     return model
+
+
+def get_weights(train_date, fold, epoch):
+    def load_model(train_date, fold, epoch):
+        cp_path = f"cp/{train_date}/{fold}/cp-{epoch:04d}"
+        model = tf.keras.models.load_model(cp_path)
+        return model
+
+    model = load_model(train_date, fold, epoch)
+    weights = [w.numpy() for w in model.weights]
+    return weights
 
 
 def pred(X, Wh, Wr, bh, Wo, bo):

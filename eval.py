@@ -2,22 +2,20 @@ import json
 
 import numpy as np
 
-from lib.rnn import load_weights, pred
+from lib.rnn import get_weights, pred
 from lib.evalutil import peaks, accuracies, get_result_table
 
 # load model
 with open("configs/eval.json") as f:
     config = json.load(f)
 
-weights = load_weights(**config["weights"])
+weights = get_weights(**config["weight"])
 
 feature_date = config["feature_date"]
 
 # load test data
-X_test_dict = np.load(f"features/{feature_date}/X_test.npy", allow_pickle=True)
-X_test_dict = X_test_dict[()]
-Y_test_dict = np.load(f"features/{feature_date}/Y_test.npy", allow_pickle=True)
-Y_test_dict = Y_test_dict[()]
+X_test_dict = np.load(f"features/{feature_date}/X_test.npy", allow_pickle=True)[()]
+Y_test_dict = np.load(f"features/{feature_date}/Y_test.npy", allow_pickle=True)[()]
 
 
 def eval(name):
@@ -40,8 +38,6 @@ def eval(name):
 test_names = X_test_dict.keys()
 
 result_table = get_result_table(test_names)
-
-print(result_table)
 
 for name in test_names:
     result = eval(name)
