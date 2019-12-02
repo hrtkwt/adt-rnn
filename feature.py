@@ -29,7 +29,7 @@ with open(f"./features/{now}/feature.json", "w") as f:
 logging.info(config)
 
 # make train test namelist
-random.seed(0)
+random.seed(config["seed"])
 namelist = make_namelist()
 testlist = random.sample(namelist, 4)
 trainlist = list(set(namelist) - set(testlist))

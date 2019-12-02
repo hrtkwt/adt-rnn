@@ -11,6 +11,7 @@ from lib.rnn import train
 # make logdir from current time
 now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 os.makedirs(f"./logs/{now}")
+os.makedirs(f"./cp/{now}")
 
 # logging setting
 logging.basicConfig(filename=f"./logs/{now}/train_{now}.log", level=logging.INFO)
@@ -19,7 +20,7 @@ logging.basicConfig(filename=f"./logs/{now}/train_{now}.log", level=logging.INFO
 with open("configs/train.json", "r") as f:
     config = json.load(f)
 
-with open(f"./logs/{now}/train.json", "w") as f:
+with open(f"./cp/{now}/train.json", "w") as f:
     json.dump(config, f)
 
 logging.info(config)
