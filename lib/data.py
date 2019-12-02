@@ -14,7 +14,6 @@ def get_func_feature(mode):
 
 
 def feature_a(name):
-
     y = load_audio(name, inst="#MIX")
     specs = get_specs(y)
 
@@ -27,7 +26,6 @@ def feature_a(name):
 
 
 def feature_smooth_5(name):
-
     y = load_audio(name, inst="#MIX")
     specs = get_specs(y)
 
@@ -50,7 +48,6 @@ def make_namelist():
 
 
 def get_audiopath(audioname, inst):
-
     if inst == "#MIX":
         path = "/home/cs181004/data/SMT_DRUMS/MIX"
         audiopath = os.path.join(path, audioname + "#MIX.wav")
@@ -80,7 +77,6 @@ def load_audio(audioname, inst):
 
 
 def load_target(audioname, inst):
-
     targetpath = get_targetpath(audioname, inst)
     length = get_audiolen(audioname)
 
@@ -132,7 +128,6 @@ def down_target(target):
 
 
 def get_specs(y):
-
     C = librosa.core.stft(
         y,
         n_fft=2048,

@@ -1,9 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import librosa
-import librosa.display
 import pandas as pd
-import matplotlib.pyplot as plt
 
 
 def get_weights(cp_path):
@@ -17,7 +15,6 @@ def get_weights(cp_path):
 
 
 def peak_picking(activation, pre_max, post_max, pre_avg, post_avg, delta, wait):
-
     peak = np.zeros(activation.shape, dtype="int32")
 
     peak_indices = librosa.util.peak_pick(
@@ -146,7 +143,6 @@ def accuracies(Y_true, Y_peak, **kwargs):
 
 
 def get_result_table(audio_names):
-
     n_audio = len(audio_names)
     n_metrics = len(metrics_names)
     n_inst = len(inst_names)
@@ -163,28 +159,3 @@ def get_result_table(audio_names):
     result_table.columns.names = ["inst", "metrics"]
 
     return result_table
-
-
-def show_spec(C, name):
-    plt.figure(figsize=(24, 8))
-    plt.title(name)
-    librosa.display.specshow(C.T, x_axis="time", y_axis="hz", sr=44100, hop_length=512)
-    plt.colorbar()
-    plt.show()
-
-
-def show_specs(**kwargs):
-    for name, C in kwargs.items():
-        show_spec(C, name)
-
-
-def show_wave(y, name):
-    plt.figure(figsize=(18, 6))
-    plt.title(name)
-    plt.plot(y, color="grey")
-    plt.show()
-
-
-def show_waves(**kwargs):
-    for name, y in kwargs.items():
-        show_wave(y, name)

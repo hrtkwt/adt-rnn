@@ -21,7 +21,6 @@ def create_model(params):
 
 
 def train(X_train, X_valid, Y_train, Y_valid, params, rpath):
-
     # model
     model = create_model(params)
 

@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
+import librosa
+import librosa.display
 
 
-def target(name, target):
+def show_target(name, target):
     plt.figure(figsize=(18, 6))
     plt.title(name)
 
@@ -18,13 +20,13 @@ def target(name, target):
     plt.show()
 
 
-def Y(Y):
-    target("HH", Y[:, 0])
-    target("SD", Y[:, 1])
-    target("KD", Y[:, 2])
+def show_Y(Y):
+    show_target("SD", Y[:, 1])
+    show_target("HH", Y[:, 0])
+    show_target("KD", Y[:, 2])
 
 
-def Y2(Y, name):
+def show_Y2(Y, name):
     plt.figure(figsize=(18, 6))
     plt.title(name)
     plt.plot(Y[:, 0], color="blue")
@@ -32,3 +34,28 @@ def Y2(Y, name):
     plt.plot(Y[:, 2], color="red")
 
     plt.show()
+
+
+def show_spec(C, name):
+    plt.figure(figsize=(24, 8))
+    plt.title(name)
+    librosa.display.specshow(C.T, x_axis="time", y_axis="hz", sr=44100, hop_length=512)
+    plt.colorbar()
+    plt.show()
+
+
+def show_specs(**kwargs):
+    for name, C in kwargs.items():
+        show_spec(C, name)
+
+
+def show_wave(y, name):
+    plt.figure(figsize=(18, 6))
+    plt.title(name)
+    plt.plot(y, color="grey")
+    plt.show()
+
+
+def show_waves(**kwargs):
+    for name, y in kwargs.items():
+        show_wave(y, name)
