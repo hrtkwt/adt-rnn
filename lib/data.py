@@ -164,8 +164,8 @@ def apply_maxmin(x):
     return (x - x.min()) / (x.max() - x.min())
 
 
-def smooth_spec(C):
-    return np.sum(C, axis=1)
+def smooth_spec(C, start, end):
+    return np.sum(C[:, start:end], axis=1)
 
 
 def smooth_specs(**kwargs):
@@ -173,6 +173,30 @@ def smooth_specs(**kwargs):
     for name, C in kwargs.items():
         C = smooth_spec(C)
         out[name] = C
+
+    return out
+
+
+def smooth_spec_5(C):
+    step = 205
+
+    i = 0
+    start = i * step
+    end = (i + 1) * step
+
+    wave = smooth_spec(C, start, end)
+    wave = pdd3(wave)[:, np.newaxis]
+
+    out = wave
+
+    for i in range(1, 5):
+        start = i * step
+        end = (i + 1) * step
+
+        wave = smooth_spec(C, start, end)[:, np.newaxis]
+        wave = pdd3(wave)
+
+        out = np.hstack((out, wave))
 
     return out
 
