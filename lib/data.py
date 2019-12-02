@@ -6,6 +6,21 @@ import librosa
 import librosa.display
 
 
+def feature_smooth_5(name):
+
+    y = load_audio(name, inst="#MIX")
+    specs = get_specs(y)
+
+    smo5 = smooth_spec_5(specs["pdd2"])
+
+    targets = get_targets(name).T
+
+    X = np.hstack((specs["a"], smo5))
+    Y = targets
+
+    return X, Y
+
+
 def make_namelist():
     namelist = []
     for i in range(20):

@@ -8,12 +8,8 @@ import json
 
 from lib.data import (
     make_namelist,
-    load_audio,
-    get_specs,
-    get_targets,
-    smooth_specs,
     make_segments,
-    pdd3,
+    feature_smooth_5
 )
 
 
@@ -39,21 +35,8 @@ testlist = random.sample(namelist, 4)
 trainlist = list(set(namelist) - set(testlist))
 
 
-def feature(name):
-
-    y = load_audio(name, inst="#MIX")
-    specs = get_specs(y)
-
-    waves = smooth_specs(**specs)
-    waves["pdd3"] = pdd3(waves["pdd2"])
-
-    targets = get_targets(name).T
-
-    X = specs["a"]
-    Y = targets
-
-    return X, Y
-
+feature = feature_smooth_5
+logging.info("use feature_smooth_5")
 
 # make train dataset
 logging.info("-----train-----")
@@ -65,6 +48,7 @@ for name in trainlist:
     logging.info(name)
 
     X, Y = feature(name)
+
     X = make_segments(X, 100, 1)
     Y = make_segments(Y, 100, 1)[:, -1, :]
 
