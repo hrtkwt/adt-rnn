@@ -9,7 +9,7 @@ import json
 from lib.data import (
     make_namelist,
     make_segments,
-    feature_smooth_5
+    get_func_feature
 )
 
 # make save dir from current time
@@ -29,13 +29,13 @@ with open(f"./features/{now}/feature.json", "w") as f:
 logging.info(config)
 
 # make train test namelist
+random.seed(0)
 namelist = make_namelist()
 testlist = random.sample(namelist, 4)
 trainlist = list(set(namelist) - set(testlist))
 
 # set feature
-feature = feature_smooth_5
-logging.info("use feature_smooth_5")
+feature = get_func_feature(mode=config["mode"])
 
 # make train dataset
 logging.info("-----train-----")

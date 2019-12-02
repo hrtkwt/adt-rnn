@@ -6,6 +6,26 @@ import librosa
 import librosa.display
 
 
+def get_func_feature(mode):
+    if mode == "a":
+        return feature_a
+    if mode == "smo5":
+        return feature_smooth_5
+
+
+def feature_a(name):
+
+    y = load_audio(name, inst="#MIX")
+    specs = get_specs(y)
+
+    targets = get_targets(name).T
+
+    X = specs["a"]
+    Y = targets
+
+    return X, Y
+
+
 def feature_smooth_5(name):
 
     y = load_audio(name, inst="#MIX")
