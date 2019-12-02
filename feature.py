@@ -12,7 +12,6 @@ from lib.data import (
     feature_smooth_5
 )
 
-
 # make save dir from current time
 now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 os.makedirs(f"./features/{now}")
@@ -34,7 +33,7 @@ namelist = make_namelist()
 testlist = random.sample(namelist, 4)
 trainlist = list(set(namelist) - set(testlist))
 
-
+# set feature
 feature = feature_smooth_5
 logging.info("use feature_smooth_5")
 
@@ -78,7 +77,6 @@ for name in testlist:
 
 # save
 def save(name, arr):
-
     path = os.path.join("features", now, name)
     np.save(path, arr)
 
