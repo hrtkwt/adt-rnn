@@ -10,3 +10,4 @@ configs
 .mypy_cache
 nohup.out
 eda*
+*.csv
