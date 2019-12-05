@@ -24,7 +24,7 @@ def save_target(target, now, title, color):
     plt.figure(figsize=(18, 6))
     plt.title(title)
     plt.plot(target, color=color)
-    plt.savefig(f'results/{now}/{title}.png')
+    plt.savefig(f"results/{now}/{title}.png")
 
 
 def show_Y(Y):
@@ -54,7 +54,7 @@ def save_Y2(Y, name):
     plt.plot(Y[:, 0], color="blue")
     plt.plot(Y[:, 1], color="green")
     plt.plot(Y[:, 2], color="red")
-    plt.savefig(f'{name}.png')
+    plt.savefig(f"{name}.png")
 
 
 def show_spec(C, name):
@@ -70,7 +70,7 @@ def save_spec(C, now, name, prefix):
     plt.title(f"{name}_{prefix}")
     librosa.display.specshow(C.T, x_axis="time", y_axis="hz", sr=44100, hop_length=512)
     plt.colorbar()
-    plt.savefig(f'results/{now}/{name}_{prefix}.png')
+    plt.savefig(f"results/{now}/{name}_{prefix}.png")
 
 
 def show_specs(**kwargs):
@@ -89,7 +89,7 @@ def save_wave(y, name):
     plt.figure(figsize=(18, 6))
     plt.title(name)
     plt.plot(y, color="black")
-    plt.savefig(f'{name}.png')
+    plt.savefig(f"{name}.png")
 
 
 def show_waves(**kwargs):

@@ -6,11 +6,7 @@ import logging
 import os
 import json
 
-from lib.data import (
-    make_namelist,
-    make_segments,
-    get_func_feature
-)
+from lib.data import make_namelist, make_segments, get_func_feature
 
 # make save dir from current time
 now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
