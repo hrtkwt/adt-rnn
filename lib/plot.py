@@ -14,7 +14,7 @@ def show_target(target, name):
     elif name == "KD":
         color = "red"
     else:
-        color = "grey"
+        color = "black"
 
     plt.plot(target, color=color)
     plt.show()
@@ -31,7 +31,7 @@ def save_target(target, name):
     elif name == "KD":
         color = "red"
     else:
-        color = "grey"
+        color = "black"
 
     plt.plot(target, color=color)
     plt.savefig(f'{name}.png')
@@ -85,14 +85,14 @@ def show_specs(**kwargs):
 def show_wave(y, name):
     plt.figure(figsize=(18, 6))
     plt.title(name)
-    plt.plot(y, color="grey")
+    plt.plot(y, color="black")
     plt.show()
 
 
 def save_wave(y, name):
     plt.figure(figsize=(18, 6))
     plt.title(name)
-    plt.plot(y, color="grey")
+    plt.plot(y, color="black")
     plt.savefig(f'{name}.png')
 
 
