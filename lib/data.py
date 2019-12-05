@@ -11,6 +11,21 @@ def get_func_feature(mode):
         return feature_a
     if mode == "smo5":
         return feature_smooth_5
+    if mode == "a_z":
+        return feature_a_z
+
+
+def feature_a_z(name):
+    y = load_audio(name, inst="#MIX")
+    specs = get_specs(y)
+
+    targets = get_targets(name).T
+
+    X = specs["a"]
+    X = apply_zscore(X)
+    Y = targets
+
+    return X, Y
 
 
 def feature_a(name):
