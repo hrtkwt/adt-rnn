@@ -65,12 +65,12 @@ def show_spec(C, name):
     plt.show()
 
 
-def save_spec(C, name):
+def save_spec(C, now, name, prefix):
     plt.figure(figsize=(24, 8))
-    plt.title(name)
+    plt.title(f"{name}_{prefix}")
     librosa.display.specshow(C.T, x_axis="time", y_axis="hz", sr=44100, hop_length=512)
     plt.colorbar()
-    plt.savefig(f'{name}.png')
+    plt.savefig(f'results/{now}/{name}_{prefix}.png')
 
 
 def show_specs(**kwargs):

@@ -66,11 +66,11 @@ def eval(name):
     Y_peak = peaks(Y_pred, **config["peak_params"])
 
     # serialize
-    save_spec(X_test, f"results/{now}/{name}_X")
+    save_spec(X_test, now, name, "X_test")
     save_Y(Y_pred, now, name, "pred")
     save_Y(Y_peak, now, name, "peak")
     save_Y(Y_test, now, name, "GT")
-    
+
     # eval
     result = accuracies(Y_test, Y_peak, **config["metrics_params"])
 
