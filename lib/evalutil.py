@@ -161,15 +161,13 @@ def get_result_table(audio_names):
     return result_table
 
 
-def info(**kwargs):
-    for name, C in kwargs.items():
-        print(name)
-        print("    shape:", C.shape)
-        print("    max:", np.max(C))
-        print("    min:", np.min(C))
-        print("    median:", np.median(C))
-        print("    mean:", np.mean(C))
-        print("    std:", np.std(C))
+def info(C):
+    print("    shape:", C.shape)
+    print("    max:", np.max(C))
+    print("    min:", np.min(C))
+    print("    median:", np.median(C))
+    print("    mean:", np.mean(C))
+    print("    std:", np.std(C))
 
 
 def get_stats(C):
