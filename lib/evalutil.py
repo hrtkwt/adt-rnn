@@ -159,3 +159,26 @@ def get_result_table(audio_names):
     result_table.columns.names = ["inst", "metrics"]
 
     return result_table
+
+
+def info(**kwargs):
+    for name, C in kwargs.items():
+        print(name)
+        print("    shape:", C.shape)
+        print("    max:", np.max(C))
+        print("    min:", np.min(C))
+        print("    median:", np.median(C))
+        print("    mean:", np.mean(C))
+        print("    std:", np.std(C))
+
+
+def get_stats(C):
+    stats = {
+        "size": C.size,
+        "max": np.max(C),
+        "min": np.min(C),
+        "median": np.median(C),
+        "mean": np.mean(C),
+        "std:": np.std(C),
+    }
+    return stats
