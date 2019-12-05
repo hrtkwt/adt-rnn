@@ -20,27 +20,23 @@ def show_target(target, name):
     plt.show()
 
 
-def save_target(target, name):
+def save_target(target, now, title, color):
     plt.figure(figsize=(18, 6))
-    plt.title(name)
-
-    if name == "HH":
-        color = "blue"
-    elif name == "SD":
-        color = "green"
-    elif name == "KD":
-        color = "red"
-    else:
-        color = "black"
-
+    plt.title(title)
     plt.plot(target, color=color)
-    plt.savefig(f'{name}.png')
+    plt.savefig(f'results/{now}/{title}.png')
 
 
 def show_Y(Y):
     show_target(Y[:, 0], "HH")
     show_target(Y[:, 1], "SD")
     show_target(Y[:, 2], "KD")
+
+
+def save_Y(Y, now, name, suffix):
+    save_target(Y[:, 0], now, f"{name}_HH_{suffix}", "b")
+    save_target(Y[:, 1], now, f"{name}_SD_{suffix}", "g")
+    save_target(Y[:, 2], now, f"{name}_KD_{suffix}", "r")
 
 
 def show_Y2(Y, name):

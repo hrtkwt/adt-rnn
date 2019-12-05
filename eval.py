@@ -7,6 +7,8 @@ import numpy as np
 from lib.rnn import pred
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
 
+from lib.plot import save_spec, save_Y
+
 
 def open_and_save(openpath, savepath):
     with open(savepath, "w") as fs:
@@ -34,7 +36,7 @@ open_and_save(
 
 train_date = config["train_date"]
 open_and_save(
-    openpath=f"./logs/{train_date}/train.json", savepath=f"./results/{now}/train.json"
+    openpath=f"./cp/{train_date}/train.json", savepath=f"./results/{now}/train.json"
 )
 
 # make cp-path
@@ -63,6 +65,12 @@ def eval(name):
     # peak_picking
     Y_peak = peaks(Y_pred, **config["peak_params"])
 
+    # serialize
+    save_spec(X_test, f"results/{now}/{name}_X")
+    save_Y(Y_pred, now, name, "pred")
+    save_Y(Y_peak, now, name, "peak")
+    save_Y(Y_test, now, name, "GT")
+    
     # eval
     result = accuracies(Y_test, Y_peak, **config["metrics_params"])
 
