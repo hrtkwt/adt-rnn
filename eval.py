@@ -69,7 +69,7 @@ def eval(name):
     save_spec(X_test, now, name, "X_test")
     save_Y(Y_pred, now, name, "pred")
     save_Y(Y_peak, now, name, "peak")
-    save_Y(Y_test, now, name, "GT")
+    save_Y(Y_test, now, name, "gt")
 
     # eval
     result = accuracies(Y_test, Y_peak, **config["metrics_params"])
