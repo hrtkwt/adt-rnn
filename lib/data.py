@@ -9,10 +9,31 @@ import librosa.display
 def get_func_feature(mode):
     if mode == "a":
         return feature_a
+    if mode == "a_ad":
+        return feature_a_ad
+    if mode == "a_acd":
+        return feature_a_acd
     if mode == "smo5":
         return feature_smooth_5
     if mode == "a_z":
         return feature_a_z
+
+
+def feature_c(name):
+    y = load_audio(name, inst="#MIX")
+    C = librosa.core.stft(
+        y,
+        n_fft=2048,
+        hop_length=2048 // 4,
+        window="hann",
+        center=True,
+        dtype=np.complex64,
+        pad_mode="reflect",
+    ).T
+
+    targets = get_targets(name).T
+
+    return C, targets
 
 
 def feature_a_z(name):
@@ -28,16 +49,64 @@ def feature_a_z(name):
     return X, Y
 
 
+def feature_a_ad(name):
+    y = load_audio(name, inst="#MIX")
+    X_c = librosa.core.stft(
+        y,
+        n_fft=2048,
+        hop_length=2048 // 4,
+        window="hann",
+        center=True,
+        dtype=np.complex64,
+        pad_mode="reflect",
+    ).T
+    X_a = np.abs(X_c)
+    X_ad = deviation(X_a)
+
+    X_a_ad = np.hstack((X_a, X_ad))
+
+    Y = get_targets(name).T
+
+    return X_a_ad, Y
+
+
+def feature_a_acd(name):
+    y = load_audio(name, inst="#MIX")
+    X_c = librosa.core.stft(
+        y,
+        n_fft=2048,
+        hop_length=2048 // 4,
+        window="hann",
+        center=True,
+        dtype=np.complex64,
+        pad_mode="reflect",
+    ).T
+    X_a = np.abs(X_c)
+    X_cd = deviation(X_c)
+    X_acd = np.abs(X_cd)
+    X_a_acd = np.hstack((X_a, X_acd))
+
+    Y = get_targets(name).T
+
+    return X_a_acd, Y
+
+
 def feature_a(name):
     y = load_audio(name, inst="#MIX")
-    specs = get_specs(y)
+    X_c = librosa.core.stft(
+        y,
+        n_fft=2048,
+        hop_length=2048 // 4,
+        window="hann",
+        center=True,
+        dtype=np.complex64,
+        pad_mode="reflect",
+    ).T
+    X_a = np.abs(X_c)
 
-    targets = get_targets(name).T
+    Y = get_targets(name).T
 
-    X = specs["a"]
-    Y = targets
-
-    return X, Y
+    return X_a, Y
 
 
 def feature_smooth_5(name):
@@ -170,6 +239,15 @@ def get_specs(y):
     C_pdd2 = apply_maxmin(-np.abs(C_pdd))
 
     return {"a": C_a, "p": C_p, "up": C_up, "pd": C_pd, "pdd": C_pdd, "pdd2": C_pdd2}
+
+
+def deviation(x, foward=False):
+    x_d = np.zeros(x.shape, dtype=x.dtype)
+
+    for i in range(1, len(x_d)):
+        x_d[i] = x[i] - x[i - 1]
+
+    return x_d
 
 
 def make_segments(arr, seg_width, seg_step):
