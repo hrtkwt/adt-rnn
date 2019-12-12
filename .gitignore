@@ -12,3 +12,4 @@ nohup.out
 eda*
 *.csv
 .trash
+.nohup
