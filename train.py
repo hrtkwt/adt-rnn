@@ -1,14 +1,18 @@
 import os
 import datetime
 import logging
+import argparse
 
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split, KFold
 
+parser = argparse.ArgumentParser()
+parser.add_argument('feature')    # 必須の引数を追加
+args = parser.parse_args()    # 4. 引数を解析
 
 # params
-FEATURE = "m_acd_10"
+FEATURE = args.feature
 
 SEED = 0
 
@@ -59,8 +63,8 @@ ADAM = {
 
 FIT = {
     "batch_size": 10,
-    "epochs": 40,
-    "verbose": 1,
+    "epochs": 1,
+    "verbose": 2,
     "shuffle": True,
     "class_weight": None,
     "sample_weight": None,
