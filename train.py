@@ -7,13 +7,13 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split, KFold
 
 # params
-FEATURE_DATE = "20191202-143743"
+FEATURE_DATE = "20191209-174857"
 
 SEED = 0
 
 RNN = {
     "units": 200,
-    "activation": "tanh",
+    "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
     "recurrent_initializer": "orthogonal",
@@ -63,7 +63,7 @@ FIT = {
     "shuffle": True,
     "class_weight": None,
     "sample_weight": None,
-    "initial_epoch": 1,
+    "initial_epoch": 0,
     "steps_per_epoch": None,
     "validation_steps": None,
     "validation_freq": 1,
@@ -73,6 +73,7 @@ FIT = {
 }
 
 VAL_SIZE = 0.2
+
 NFOLDS = -1
 
 

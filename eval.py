@@ -6,8 +6,8 @@ import numpy as np
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
 from lib.plot import save_spec, save_Y
 
-FEATURE_DATE = "20191202-143743"
-TRAIN_DATE = ""
+FEATURE_DATE = "1212-123305"
+TRAIN_DATE = "12-120303"
 FOLD = -1
 EPOCH = 20
 
@@ -43,7 +43,7 @@ def pred(X, Wh, Wr, bh, Wo, bo):
 
     def feed_forward(x, h_):
         zh = np.dot(x, Wh) + np.dot(h_, Wr) + bh
-        h = sigmoid(zh)
+        h = np.tanh(zh)
 
         zo = np.dot(h, Wo) + bo
         y = sigmoid(zo)
