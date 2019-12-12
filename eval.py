@@ -1,13 +1,14 @@
 import os
 import datetime
+import logging
 
 import numpy as np
 
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
 from lib.plot import save_spec, save_Y
 
-FEATURE = "1212-140347"
-TRAIN = "1212-140953"
+FEATURE = "abs(C(t))"
+TRAIN = "1212-145640"
 FOLD = -1
 EPOCH = 20
 
@@ -22,9 +23,26 @@ PEAK = {
 
 TOLERANCE = {"pre_tolerance": 3, "post_tolerance": 3}
 
-# get current date
+# make logdir from current time
 now = datetime.datetime.now().strftime("%m%d-%H%M%S")
 os.makedirs(f"./results/{now}")
+
+# set logging
+logging.basicConfig(filename=f"./results/{now}/train_{now}.log", level=logging.INFO)
+
+logging.info("-----params-----")
+logging.info("--feature")
+logging.info(FEATURE)
+logging.info("--train")
+logging.info(TRAIN)
+logging.info("--fold")
+logging.info(FOLD)
+logging.info("--epoch")
+logging.info(EPOCH)
+logging.info("--peak")
+logging.info(PEAK)
+logging.info("--tolerance")
+logging.info(TOLERANCE)
 
 # make cp-path
 cp_path = f"cp/{TRAIN}/{FOLD}/cp-{EPOCH:04d}"
@@ -51,7 +69,7 @@ def pred(X, Wh, Wr, bh, Wo, bo):
         return y, h
 
     x0 = X[0]
-    h0 = np.zeros(200)
+    h0 = np.zeros(bh.shape)
 
     Y, h = feed_forward(x0, h0)
 
@@ -73,11 +91,12 @@ def eval(name):
     # peak_picking
     Y_peak = peaks(Y_pred, **PEAK)
 
-    # serialize
-    save_spec(X_test, now, name, "X_test")
-    save_Y(Y_pred, now, name, "pred")
-    save_Y(Y_peak, now, name, "peak")
-    save_Y(Y_test, now, name, "gt")
+    # serialize image
+    if True:
+        save_spec(X_test, now, name, "X_test")
+        save_Y(Y_pred, now, name, "pred")
+        save_Y(Y_peak, now, name, "peak")
+        save_Y(Y_test, now, name, "gt")
 
     # eval
     result = accuracies(Y_test, Y_peak, **TOLERANCE)

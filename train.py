@@ -7,12 +7,12 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split, KFold
 
 # params
-FEATURE_DATE = "1212-140347"
+FEATURE_DATE = "abs(C(t))"
 
 SEED = 0
 
 RNN = {
-    "units": 200,
+    "units": 400,
     "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
@@ -58,7 +58,7 @@ ADAM = {
 
 FIT = {
     "batch_size": 10,
-    "epochs": 20,
+    "epochs": 40,
     "verbose": 1,
     "shuffle": True,
     "class_weight": None,
