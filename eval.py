@@ -6,8 +6,8 @@ import numpy as np
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
 from lib.plot import save_spec, save_Y
 
-FEATURE_DATE = "1212-123305"
-TRAIN_DATE = "12-120303"
+FEATURE = "1212-140347"
+TRAIN = "1212-140953"
 FOLD = -1
 EPOCH = 20
 
@@ -27,14 +27,14 @@ now = datetime.datetime.now().strftime("%m%d-%H%M%S")
 os.makedirs(f"./results/{now}")
 
 # make cp-path
-cp_path = f"cp/{TRAIN_DATE}/{FOLD}/cp-{EPOCH:04d}"
+cp_path = f"cp/{TRAIN}/{FOLD}/cp-{EPOCH:04d}"
 
 # get weights
 weights = get_weights(cp_path)
 
 # load test data
-X_test_dict = np.load(f"features/{FEATURE_DATE}/X_test.npy", allow_pickle=True)[()]
-Y_test_dict = np.load(f"features/{FEATURE_DATE}/Y_test.npy", allow_pickle=True)[()]
+X_test_dict = np.load(f"features/{FEATURE}/X_test.npy", allow_pickle=True)[()]
+Y_test_dict = np.load(f"features/{FEATURE}/Y_test.npy", allow_pickle=True)[()]
 
 
 def pred(X, Wh, Wr, bh, Wo, bo):
@@ -43,7 +43,7 @@ def pred(X, Wh, Wr, bh, Wo, bo):
 
     def feed_forward(x, h_):
         zh = np.dot(x, Wh) + np.dot(h_, Wr) + bh
-        h = np.tanh(zh)
+        h = sigmoid(zh)
 
         zo = np.dot(h, Wo) + bo
         y = sigmoid(zo)

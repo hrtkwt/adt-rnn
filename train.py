@@ -7,7 +7,7 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split, KFold
 
 # params
-FEATURE_DATE = "20191209-174857"
+FEATURE_DATE = "1212-140347"
 
 SEED = 0
 
@@ -36,7 +36,7 @@ RNN = {
 
 DENSE = {
     "units": 3,
-    "activation": None,
+    "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
     "bias_initializer": "zeros",
@@ -147,6 +147,8 @@ os.makedirs(f"./cp/{now}")
 logging.basicConfig(filename=f"./cp/{now}/train_{now}.log", level=logging.INFO)
 
 logging.info("-----params-----")
+logging.info("feature_date")
+logging.info(FEATURE_DATE)
 logging.info("rnn")
 logging.info(RNN)
 logging.info("dense")
