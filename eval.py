@@ -7,10 +7,10 @@ import numpy as np
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
 from lib.plot import save_spec, save_Y
 
-FEATURE = "abs(C(t))"
-TRAIN = "1212-145640"
+FEATURE = "m_10"
+TRAIN = "base_m_10"
 FOLD = -1
-EPOCH = 20
+EPOCH = 15
 
 PEAK = {
     "pre_max": 3,
@@ -25,7 +25,7 @@ TOLERANCE = {"pre_tolerance": 3, "post_tolerance": 3}
 
 # make logdir from current time
 now = datetime.datetime.now().strftime("%m%d-%H%M%S")
-os.makedirs(f"./results/{now}")
+os.makedirs(f"./results/{now}/fig")
 
 # set logging
 logging.basicConfig(filename=f"./results/{now}/train_{now}.log", level=logging.INFO)
@@ -45,7 +45,7 @@ logging.info("--tolerance")
 logging.info(TOLERANCE)
 
 # make cp-path
-cp_path = f"cp/{TRAIN}/{FOLD}/cp-{EPOCH:04d}"
+cp_path = f"logs/{TRAIN}/{FOLD}/cp-{EPOCH:04d}"
 
 # get weights
 weights = get_weights(cp_path)
@@ -114,4 +114,4 @@ for name in test_names:
 
 print(result_table)
 
-result_table.to_csv(f"results/{now}/result.csv")
+result_table.to_csv(f"results/{now}/result_table.csv")

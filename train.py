@@ -6,13 +6,14 @@ import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split, KFold
 
+
 # params
-FEATURE_DATE = "abs(C(t))"
+FEATURE = "m_acd_10"
 
 SEED = 0
 
 RNN = {
-    "units": 400,
+    "units": 200,
     "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
@@ -121,7 +122,7 @@ def train(X_train, X_valid, Y_train, Y_valid, rpath):
     tb_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
     # cp_callback
-    cp_path = f"cp/{rpath}" + "/cp-{epoch:04d}"
+    cp_path = f"logs/{rpath}" + "/cp-{epoch:04d}"
     cp_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=cp_path, save_weights_only=False, verbose=1
     )
@@ -141,30 +142,29 @@ def train(X_train, X_valid, Y_train, Y_valid, rpath):
 # make logdir from current time
 now = datetime.datetime.now().strftime("%m%d-%H%M%S")
 os.makedirs(f"./logs/{now}")
-os.makedirs(f"./cp/{now}")
 
 # set logging
-logging.basicConfig(filename=f"./cp/{now}/train_{now}.log", level=logging.INFO)
+logging.basicConfig(filename=f"./logs/{now}/train_{now}.log", level=logging.INFO)
 
 logging.info("-----params-----")
-logging.info("feature_date")
-logging.info(FEATURE_DATE)
-logging.info("rnn")
+logging.info("---feature")
+logging.info(FEATURE)
+logging.info("---rnn")
 logging.info(RNN)
-logging.info("dense")
+logging.info("---dense")
 logging.info(DENSE)
-logging.info("adam")
+logging.info("---adam")
 logging.info(ADAM)
-logging.info("fit")
+logging.info("---fit")
 logging.info(FIT)
-logging.info("val_size")
+logging.info("---val_size")
 logging.info(VAL_SIZE)
-logging.info("nfolds")
+logging.info("---nfolds")
 logging.info(NFOLDS)
 
 # load dataset
-X_train_dict = np.load(f"features/{FEATURE_DATE}/X_train.npy", allow_pickle=True)[()]
-Y_train_dict = np.load(f"features/{FEATURE_DATE}/Y_train.npy", allow_pickle=True)[()]
+X_train_dict = np.load(f"features/{FEATURE}/X_train.npy", allow_pickle=True)[()]
+Y_train_dict = np.load(f"features/{FEATURE}/Y_train.npy", allow_pickle=True)[()]
 
 X_train_all = expand(X_train_dict)
 Y_train_all = expand(Y_train_dict)

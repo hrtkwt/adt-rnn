@@ -21,10 +21,9 @@ def show_target(target, name):
 
 
 def save_target(target, now, title, color):
-    plt.figure(figsize=(18, 6))
     plt.title(title)
     plt.plot(target, color=color)
-    plt.savefig(f"results/{now}/{title}.png")
+    plt.savefig(f"results/{now}/fig/{title}.png")
 
 
 def show_Y(Y):
@@ -66,11 +65,10 @@ def show_spec(C, name):
 
 
 def save_spec(C, now, name, prefix):
-    plt.figure(figsize=(24, 8))
     plt.title(f"{name}_{prefix}")
     librosa.display.specshow(C.T, x_axis="time", y_axis="hz", sr=44100, hop_length=512)
     plt.colorbar()
-    plt.savefig(f"results/{now}/{name}_{prefix}.png")
+    plt.savefig(f"results/{now}/fig/{name}_{prefix}.png")
 
 
 def show_specs(**kwargs):

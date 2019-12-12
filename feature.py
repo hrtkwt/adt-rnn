@@ -35,6 +35,17 @@ STFT = {
 
 SEG = {"seg_width": 100, "seg_step": 1}
 
+MODE = "m_acd"
+
+
+def deviation(x, foward=False):
+    x_d = np.zeros(x.shape, dtype=x.dtype)
+
+    for i in range(1, len(x_d)):
+        x_d[i] = x[i] - x[i - 1]
+
+    return x_d
+
 
 def make_namelist():
     namelist = []
@@ -55,17 +66,62 @@ def get_audiopath(audioname, inst):
     return audiopath
 
 
-def feature(audioname):
+def get_func_feature(mode):
+    if mode == "m":
+        return feature_m
+    elif mode == "m_md":
+        return feature_m_md
+    elif mode == "m_acd":
+        return feature_m_acd
+    else:
+        print("load_func_err")
+        exit(0)
+
+
+def feature_m(audioname):
     # get audiopath from audioname
     audiopath = get_audiopath(audioname, INST)
     y, _ = librosa.load(path=audiopath, **AUDIO)
     X_c = librosa.core.stft(y=y, **STFT).T
 
     # abs
-    X_abs = np.abs(X_c)
+    X_m = np.abs(X_c)
+
+    X = X_m
     Y = get_targets(name).T
 
-    return X_abs, Y
+    return X, Y
+
+
+def feature_m_md(audioname):
+    # get audiopath from audioname
+    audiopath = get_audiopath(audioname, INST)
+    y, _ = librosa.load(path=audiopath, **AUDIO)
+    X_c = librosa.core.stft(y=y, **STFT).T
+
+    X_m = np.abs(X_c)
+    X_md = deviation(X_m)
+
+    X = np.hstack((X_m, X_md))
+    Y = get_targets(name).T
+
+    return X, Y
+
+
+def feature_m_acd(audioname):
+    # get audiopath from audioname
+    audiopath = get_audiopath(audioname, INST)
+    y, _ = librosa.load(path=audiopath, **AUDIO)
+    X_c = librosa.core.stft(y=y, **STFT).T
+
+    X_m = np.abs(X_c)
+    X_cd = deviation(X_c)
+    X_acd = np.abs(X_cd)
+
+    X = np.hstack((X_m, X_acd))
+    Y = get_targets(name).T
+
+    return X, Y
 
 
 def make_segments(arr, seg_width, seg_step):
@@ -96,15 +152,17 @@ logging.basicConfig(filename=f"./features/{now}/feature_{now}.log", level=loggin
 
 # save params
 logging.info("----params-----")
-logging.info("seed")
+logging.info("---mode")
+logging.info(MODE)
+logging.info("---seed")
 logging.info(SEED)
-logging.info("inst")
+logging.info("---inst")
 logging.info(INST)
-logging.info("audio_params")
+logging.info("---audio_params")
 logging.info(AUDIO)
-logging.info("stft_params")
+logging.info("---stft_params")
 logging.info(STFT)
-logging.info("seg_params")
+logging.info("---seg_params")
 logging.info(SEG)
 
 # make train test namelist
@@ -123,6 +181,7 @@ Y_train = dict()
 for name in trainlist:
     logging.info(name)
 
+    feature = get_func_feature(MODE)
     X, Y = feature(name)
 
     # make segments

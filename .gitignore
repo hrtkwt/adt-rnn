@@ -11,3 +11,4 @@ configs
 nohup.out
 eda*
 *.csv
+.trash
