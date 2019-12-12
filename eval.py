@@ -1,57 +1,65 @@
-import json
 import os
 import datetime
 
 import numpy as np
 
-from lib.rnn import pred
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
-
 from lib.plot import save_spec, save_Y
 
+FEATURE_DATE = "20191202-143743"
+TRAIN_DATE = ""
+FOLD = -1
+EPOCH = 20
 
-def open_and_save(openpath, savepath):
-    with open(savepath, "w") as fs:
-        with open(openpath, "r") as fo:
-            cnf = json.load(fo)
-        json.dump(cnf, fs)
+PEAK = {
+    "pre_max": 3,
+    "post_max": 3,
+    "pre_avg": 3,
+    "post_avg": 3,
+    "delta": 0.05,
+    "wait": 2,
+}
 
+TOLERANCE = {"pre_tolerance": 3, "post_tolerance": 3}
 
-now = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+# get current date
+now = datetime.datetime.now().strftime("%m%d-%H%M%S")
 os.makedirs(f"./results/{now}")
 
-with open("configs/eval.json", "r") as f:
-    config = json.load(f)
-
-with open(f"./results/{now}/eval.json", "w") as f:
-    json.dump(config, f)
-
-
-feature_date = config["feature_date"]
-
-open_and_save(
-    openpath=f"./features/{feature_date}/feature.json",
-    savepath=f"./results/{now}/feature.json",
-)
-
-train_date = config["train_date"]
-open_and_save(
-    openpath=f"./cp/{train_date}/train.json", savepath=f"./results/{now}/train.json"
-)
-
 # make cp-path
-train_date = config["train_date"]
-fold = config["fold"]
-epoch = config["epoch"]
-
-cp_path = f"cp/{train_date}/{fold}/cp-{epoch:04d}"
+cp_path = f"cp/{TRAIN_DATE}/{FOLD}/cp-{EPOCH:04d}"
 
 # get weights
 weights = get_weights(cp_path)
 
 # load test data
-X_test_dict = np.load(f"features/{feature_date}/X_test.npy", allow_pickle=True)[()]
-Y_test_dict = np.load(f"features/{feature_date}/Y_test.npy", allow_pickle=True)[()]
+X_test_dict = np.load(f"features/{FEATURE_DATE}/X_test.npy", allow_pickle=True)[()]
+Y_test_dict = np.load(f"features/{FEATURE_DATE}/Y_test.npy", allow_pickle=True)[()]
+
+
+def pred(X, Wh, Wr, bh, Wo, bo):
+    def sigmoid(z):
+        return 1 / (1 + np.exp(-z))
+
+    def feed_forward(x, h_):
+        zh = np.dot(x, Wh) + np.dot(h_, Wr) + bh
+        h = sigmoid(zh)
+
+        zo = np.dot(h, Wo) + bo
+        y = sigmoid(zo)
+
+        return y, h
+
+    x0 = X[0]
+    h0 = np.zeros(200)
+
+    Y, h = feed_forward(x0, h0)
+
+    for x in X[1:]:
+        y, h = feed_forward(x, h)
+        Y = np.vstack((Y, y))
+
+    return Y
 
 
 def eval(name):
@@ -63,7 +71,7 @@ def eval(name):
     Y_pred = pred(X_test, *weights)
 
     # peak_picking
-    Y_peak = peaks(Y_pred, **config["peak_params"])
+    Y_peak = peaks(Y_pred, **PEAK)
 
     # serialize
     save_spec(X_test, now, name, "X_test")
@@ -72,7 +80,7 @@ def eval(name):
     save_Y(Y_test, now, name, "gt")
 
     # eval
-    result = accuracies(Y_test, Y_peak, **config["metrics_params"])
+    result = accuracies(Y_test, Y_peak, **TOLERANCE)
 
     return result
 
