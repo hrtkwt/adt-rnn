@@ -7,10 +7,10 @@ import numpy as np
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
 from lib.plot import save_spec, save_Y
 
-FEATURE = "m_10"
-TRAIN = "base_m_10"
+FEATURE = "m_acd_10"
+TRAIN = "m_acd_10"
 FOLD = -1
-EPOCH = 15
+EPOCH = 63
 
 PEAK = {
     "pre_max": 3,
@@ -23,12 +23,14 @@ PEAK = {
 
 TOLERANCE = {"pre_tolerance": 3, "post_tolerance": 3}
 
+FIG = False
+
 # make logdir from current time
 now = datetime.datetime.now().strftime("%m%d-%H%M%S")
 os.makedirs(f"./results/{now}/fig")
 
 # set logging
-logging.basicConfig(filename=f"./results/{now}/train_{now}.log", level=logging.INFO)
+logging.basicConfig(filename=f"./results/{now}/eval_{now}.log", level=logging.INFO)
 
 logging.info("-----params-----")
 logging.info("--feature")
@@ -92,7 +94,7 @@ def eval(name):
     Y_peak = peaks(Y_pred, **PEAK)
 
     # serialize image
-    if True:
+    if FIG:
         save_spec(X_test, now, name, "X_test")
         save_Y(Y_pred, now, name, "pred")
         save_Y(Y_peak, now, name, "peak")
