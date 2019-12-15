@@ -14,7 +14,7 @@ args = parser.parse_args()  # 4. 引数を解析
 # params
 FEATURE = args.feature
 
-SEED = 2020
+SEED = 1994
 
 NORMALIZE = False
 
