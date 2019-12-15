@@ -19,7 +19,7 @@ SEED = 2020
 NORMALIZE = False
 
 RNN1 = {
-    "units": 200,
+    "units": 400,
     "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
@@ -154,24 +154,12 @@ os.makedirs(f"./logs/{now}")
 
 # set logging
 logging.basicConfig(filename=f"./logs/{now}/train_{now}.log", level=logging.INFO)
-
-logging.info("-----params-----")
-logging.info("---feature")
-logging.info(FEATURE)
-logging.info("---normalize")
-logging.info(NORMALIZE)
-logging.info("---rnn")
-logging.info(RNN1)
-logging.info("---dense")
-logging.info(DENSE)
-logging.info("---adam")
-logging.info(ADAM)
-logging.info("---fit")
-logging.info(FIT)
-logging.info("---val_size")
-logging.info(VAL_SIZE)
-logging.info("---nfolds")
-logging.info(NFOLDS)
+logging.info("-----params")
+items = list(globals().items())
+for (symbol, value) in items:
+    if symbol.isupper():
+        logging.info(f"---{symbol}")
+        logging.info(value)
 
 # load dataset
 X_train_dict = np.load(f"features/{FEATURE}/X_train.npy", allow_pickle=True)[()]
