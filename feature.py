@@ -10,7 +10,7 @@ import librosa
 from lib.data import get_targets
 
 # params
-SEED = 0
+SEED = 2019
 
 INST = "#MIX"
 
@@ -33,7 +33,7 @@ STFT = {
     "pad_mode": "reflect",
 }
 
-SEG = {"seg_width": 100, "seg_step": 1}
+SEG = {"seg_width": 100, "seg_step": 10}
 
 MODE = "m_acd"
 

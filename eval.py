@@ -7,10 +7,10 @@ import numpy as np
 from lib.evalutil import peaks, accuracies, get_result_table, get_weights
 from lib.plot import save_spec, save_Y
 
-FEATURE = "m_acd_10"
-TRAIN = "m_acd_10"
+FEATURE = "m_1"
+TRAIN = "base_m_1"
 FOLD = -1
-EPOCH = 63
+EPOCH = 49
 
 PEAK = {
     "pre_max": 3,

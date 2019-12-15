@@ -8,17 +8,19 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split, KFold
 
 parser = argparse.ArgumentParser()
-parser.add_argument('feature')    # 必須の引数を追加
-args = parser.parse_args()    # 4. 引数を解析
+parser.add_argument("feature")  # 必須の引数を追加
+args = parser.parse_args()  # 4. 引数を解析
 
 # params
 FEATURE = args.feature
 
-SEED = 0
+SEED = 2020
 
-RNN = {
+NORMALIZE = False
+
+RNN1 = {
     "units": 200,
-    "activation": "sigmoid",
+    "activation": "tanh",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
     "recurrent_initializer": "orthogonal",
@@ -63,7 +65,7 @@ ADAM = {
 
 FIT = {
     "batch_size": 10,
-    "epochs": 1,
+    "epochs": 100,
     "verbose": 2,
     "shuffle": True,
     "class_weight": None,
@@ -96,7 +98,10 @@ def expand(a_dict):
 def create_model():
     # model
     model = tf.keras.models.Sequential(
-        [tf.keras.layers.SimpleRNN(**RNN), tf.keras.layers.Dense(**DENSE)]
+        [
+            tf.keras.layers.SimpleRNN(**RNN1),
+            tf.keras.layers.Dense(**DENSE)
+        ]
     )
 
     optimizer = tf.keras.optimizers.Adam(**ADAM)
@@ -153,8 +158,10 @@ logging.basicConfig(filename=f"./logs/{now}/train_{now}.log", level=logging.INFO
 logging.info("-----params-----")
 logging.info("---feature")
 logging.info(FEATURE)
+logging.info("---normalize")
+logging.info(NORMALIZE)
 logging.info("---rnn")
-logging.info(RNN)
+logging.info(RNN1)
 logging.info("---dense")
 logging.info(DENSE)
 logging.info("---adam")
@@ -172,6 +179,14 @@ Y_train_dict = np.load(f"features/{FEATURE}/Y_train.npy", allow_pickle=True)[()]
 
 X_train_all = expand(X_train_dict)
 Y_train_all = expand(Y_train_dict)
+
+
+def apply_zscore(x):
+    return (x - x.mean()) / x.std()
+
+
+if NORMALIZE:
+    X_train_all = apply_zscore(X_train_all)
 
 if NFOLDS == -1:
 
