@@ -20,7 +20,7 @@ NORMALIZE = False
 
 RNN1 = {
     "units": 200,
-    "activation": "tanh",
+    "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
     "recurrent_initializer": "orthogonal",
