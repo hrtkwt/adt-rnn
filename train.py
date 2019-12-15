@@ -19,7 +19,7 @@ SEED = 2020
 NORMALIZE = False
 
 RNN1 = {
-    "units": 400,
+    "units": 200,
     "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
