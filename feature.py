@@ -206,19 +206,14 @@ os.makedirs(f"./features/{now}")
 logging.basicConfig(filename=f"./features/{now}/feature_{now}.log", level=logging.INFO)
 
 # save params
-logging.info("----params-----")
-logging.info("---mode")
-logging.info(MODE)
-logging.info("---seed")
-logging.info(SEED)
-logging.info("---inst")
-logging.info(INST)
-logging.info("---audio_params")
-logging.info(AUDIO)
-logging.info("---stft_params")
-logging.info(STFT)
-logging.info("---seg_params")
-logging.info(SEG)
+logging.basicConfig(filename=f"./features/{now}/feature_{now}.log", level=logging.INFO)
+logging.info("-----params")
+items = list(globals().items())
+for (symbol, value) in items:
+    if symbol.isupper():
+        logging.info(f"---{symbol}")
+        logging.info(value)
+
 
 # make train test namelist
 random.seed(SEED)

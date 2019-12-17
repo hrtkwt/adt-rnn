@@ -1,5 +1,5 @@
 import os
-import datetime
+# import datetime
 import logging
 import argparse
 
@@ -19,7 +19,7 @@ SEED = 1994
 NORMALIZE = False
 
 RNN1 = {
-    "units": 200,
+    "units": 400,
     "activation": "sigmoid",
     "use_bias": True,
     "kernel_initializer": "glorot_uniform",
@@ -149,7 +149,8 @@ def train(X_train, X_valid, Y_train, Y_valid, rpath):
 
 
 # make logdir from current time
-now = datetime.datetime.now().strftime("%m%d-%H%M%S")
+# now = datetime.datetime.now().strftime("%m%d-%H%M%S")
+now = FEATURE
 os.makedirs(f"./logs/{now}")
 
 # set logging
