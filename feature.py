@@ -10,7 +10,7 @@ import librosa
 from lib.data import get_targets
 
 # params
-SEED = 2019
+SEED = 1234
 
 INST = "#MIX"
 
@@ -35,7 +35,9 @@ STFT = {
 
 SEG = {"seg_width": 100, "seg_step": 10}
 
-MODE = "m_acd"
+MODE = "gamma"
+
+NAME = "D_gamma"
 
 
 def deviation(x, foward=False):
@@ -73,6 +75,10 @@ def get_func_feature(mode):
         return feature_m_md
     elif mode == "m_acd":
         return feature_m_acd
+    elif mode == "acd":
+        return feature_acd
+    elif mode == "gamma":
+        return feature_gamma
     else:
         print("load_func_err")
         exit(0)
@@ -124,6 +130,53 @@ def feature_m_acd(audioname):
     return X, Y
 
 
+def feature_acd(audioname):
+    audiopath = get_audiopath(audioname, INST)
+    y, _ = librosa.load(path=audiopath, **AUDIO)
+    X_c = librosa.core.stft(y=y, **STFT).T
+
+    X_cd = deviation(X_c)
+    X_acd = np.abs(X_cd)
+
+    X = X_acd
+    Y = get_targets(name).T
+
+    return X, Y
+
+
+def feature_gamma(audioname):
+    def princarg(p):
+        return ((p + np.pi) % -2 * np.pi) + np.pi
+
+    audiopath = get_audiopath(audioname, INST)
+    audiopath = get_audiopath(audioname, INST)
+    y, _ = librosa.load(path=audiopath, **AUDIO)
+    X_c = librosa.core.stft(y=y, **STFT).T
+    X_m = np.abs(X_c)
+    X_p = np.angle(X_c)
+    X_up = np.unwrap(X_p)
+
+    X_gamma = np.abs(X_m)
+
+    for t in range(2, X_gamma.shape[1]):
+        phi_target = princarg(2 * X_up[:, t - 1] - X_up[:, t - 2])
+        r_target = np.abs(X_m[:, t - 1])
+
+        phi_current = np.angle(X_c[:, t])
+        r_current = np.abs(X_c[:, t])
+
+        X_gamma[:, t] = np.sqrt(
+            r_target ** 2
+            + r_current ** 2
+            - 2 * r_target * r_current * np.cos(phi_target - phi_current)
+        )
+
+    X = X_gamma
+    Y = get_targets(name).T
+
+    return X, Y
+
+
 def make_segments(arr, seg_width, seg_step):
     t, n_bins = arr.shape
 
@@ -145,6 +198,8 @@ def make_segments(arr, seg_width, seg_step):
 
 # make save dir from current time
 now = datetime.datetime.now().strftime("%m%d-%H%M%S")
+if True:
+    now = NAME
 os.makedirs(f"./features/{now}")
 
 # set logging
