@@ -35,9 +35,15 @@ STFT = {
 
 SEG = {"seg_width": 100, "seg_step": 10}
 
-MODE = "gamma"
+FEATURE = "m"
 
-NAME = "D_gamma"
+NORMALIZE = "z"
+
+NAMEMODE = "rtw"
+
+NAME = "TEST1"
+
+N_TEST = 20
 
 
 def deviation(x, foward=False):
@@ -49,10 +55,23 @@ def deviation(x, foward=False):
     return x_d
 
 
-def make_namelist():
+def make_namelist(mode):
     namelist = []
-    for i in range(20):
-        namelist.append("RealDrum01_{:02d}".format(i))
+
+    if "r" in mode:
+        for i in range(20):
+            namelist.append("RealDrum01_{:02d}".format(i))
+    if "t" in mode:
+        for i in range(10):
+            namelist.append("TechnoDrum01_{index:02}".format(index=i))
+        for i in range(4):
+            namelist.append("TechnoDrum02_{index:02}".format(index=i))
+
+    if "w" in mode:
+        for i in range(10):
+            namelist.append("WaveDrum01_{index:02}".format(index=i))
+        for i in range(1, 61):
+            namelist.append("WaveDrum02_{index:02}".format(index=i))
 
     return namelist
 
@@ -68,7 +87,7 @@ def get_audiopath(audioname, inst):
     return audiopath
 
 
-def get_func_feature(mode):
+def select_func_feature(mode):
     if mode == "m":
         return feature_m
     elif mode == "m_md":
@@ -177,6 +196,19 @@ def feature_gamma(audioname):
     return X, Y
 
 
+def select_func_normalize(mode):
+    if mode == "z":
+        return apply_zscore
+    if mode == "idx":
+        return lambda x: x
+    else:
+        exit(1)
+
+
+def apply_zscore(x):
+    return (x - x.mean()) / x.std()
+
+
 def make_segments(arr, seg_width, seg_step):
     t, n_bins = arr.shape
 
@@ -217,10 +249,15 @@ for (symbol, value) in items:
 
 # make train test namelist
 random.seed(SEED)
-namelist = make_namelist()
+namelist = make_namelist(mode=NAMEMODE)
 
-testlist = random.sample(namelist, 4)
+testlist = random.sample(namelist, N_TEST)
 trainlist = list(set(namelist) - set(testlist))
+
+# select feature and normalize func
+feature = select_func_feature(FEATURE)
+normalize = select_func_normalize(NORMALIZE)
+
 
 # make train dataset
 logging.info("-----train-----")
@@ -231,8 +268,8 @@ Y_train = dict()
 for name in trainlist:
     logging.info(name)
 
-    feature = get_func_feature(MODE)
     X, Y = feature(name)
+    X = normalize(X)
 
     # make segments
     X = make_segments(X, **SEG)
@@ -254,6 +291,7 @@ for name in testlist:
     logging.info(name)
 
     X, Y = feature(name)
+    X = normalize(X)
 
     logging.info(X.shape)
     logging.info(Y.shape)

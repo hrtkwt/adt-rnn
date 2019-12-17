@@ -1,4 +1,5 @@
 import os
+
 # import datetime
 import logging
 import argparse
@@ -15,8 +16,6 @@ args = parser.parse_args()  # 4. 引数を解析
 FEATURE = args.feature
 
 SEED = 1994
-
-NORMALIZE = False
 
 RNN1 = {
     "units": 400,
@@ -98,10 +97,7 @@ def expand(a_dict):
 def create_model():
     # model
     model = tf.keras.models.Sequential(
-        [
-            tf.keras.layers.SimpleRNN(**RNN1),
-            tf.keras.layers.Dense(**DENSE)
-        ]
+        [tf.keras.layers.SimpleRNN(**RNN1), tf.keras.layers.Dense(**DENSE)]
     )
 
     optimizer = tf.keras.optimizers.Adam(**ADAM)
@@ -169,13 +165,6 @@ Y_train_dict = np.load(f"features/{FEATURE}/Y_train.npy", allow_pickle=True)[()]
 X_train_all = expand(X_train_dict)
 Y_train_all = expand(Y_train_dict)
 
-
-def apply_zscore(x):
-    return (x - x.mean()) / x.std()
-
-
-if NORMALIZE:
-    X_train_all = apply_zscore(X_train_all)
 
 if NFOLDS == -1:
 
