@@ -15,7 +15,7 @@ if True:
     args = parser.parse_args()
 
 # params
-SEED = 122
+SEED = 1919
 INST = "#MIX"
 AUDIO = {
     "sr": 44100,
@@ -38,7 +38,7 @@ SEG = {"seg_width": 100, "seg_step": 10}
 FEATURE = args.feature
 NORMALIZE = "z"
 AUDIOTYPE = "r"
-PREFIX = "G"
+PREFIX = "K"
 LAST = False
 NVALID = 3
 NTEST = 3
@@ -89,6 +89,8 @@ def get_audiopath(audioname, inst):
 def select_func_feature(mode):
     if mode == "m":
         return feature_m
+    elif mode == "md":
+        return feature_md
     elif mode == "m_md":
         return feature_m_md
     elif mode == "m_acd":
@@ -112,6 +114,21 @@ def feature_m(audioname):
     X_m = np.abs(X_c)
 
     X = X_m
+    Y = get_targets(name).T
+
+    return X, Y
+
+
+def feature_md(audioname):
+    # get audiopath from audioname
+    audiopath = get_audiopath(audioname, INST)
+    y, _ = librosa.load(path=audiopath, **AUDIO)
+    X_c = librosa.core.stft(y=y, **STFT).T
+
+    X_m = np.abs(X_c)
+    X_md = deviation(X_m)
+
+    X = X_md
     Y = get_targets(name).T
 
     return X, Y
@@ -248,14 +265,15 @@ for (symbol, value) in items:
 
 
 # make train test namelist
+namelist = sorted(make_namelist(AUDIOTYPE))
+
 random.seed(SEED)
-namelist = make_namelist(mode=AUDIOTYPE)
+testlist = sorted(random.sample(namelist, NTEST))
+trainlist = sorted(list(set(namelist) - set(testlist)))
 
-testlist = random.sample(namelist, NTEST)
-trainlist = list(set(namelist) - set(testlist))
-
-validlist = random.sample(trainlist, NVALID)
-trainlist = list(set(trainlist) - set(validlist))
+random.seed(SEED)
+validlist = sorted(random.sample(trainlist, NVALID))
+trainlist = sorted(list(set(trainlist) - set(validlist)))
 
 # select feature and normalize func
 feature = select_func_feature(FEATURE)
