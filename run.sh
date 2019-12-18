@@ -1,19 +1,23 @@
-run1() {
-    python train.py m_10_2
-    python train.py m_md_10_2
-    python train.py m_acd_10_2
-}
 
-run2() {
-#    python train.py G_m
-    python train.py G_acd
-    python train.py G_gamma
-}
 
-run3() {
+
+feature() {
     python feature.py m
     python feature.py acd
-    python feature.py gamma
+    python feature.py md
 }
 
-run2
+train() {
+    python train.py K_m
+    python train.py K_acd
+    python train.py K_md
+}
+
+eval() {
+    python eval_all.py J_m 7
+    python eval_all.py J_acd 8
+    python eval_all.py J_md 7
+}
+
+
+train
