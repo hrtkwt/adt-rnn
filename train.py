@@ -21,7 +21,7 @@ SEED = 2000
 MODEL = "RNN1"
 FIT = {
     "batch_size": 10,
-    "epochs": 20,
+    "epochs": 12,
     "verbose": 2,
     "shuffle": True,
     "class_weight": None,
