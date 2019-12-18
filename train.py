@@ -1,70 +1,27 @@
 import os
 
-# import datetime
+import datetime
 import logging
+
 import argparse
 
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split, KFold
+from lib.models import select_model
 
-parser = argparse.ArgumentParser()
-parser.add_argument("feature")  # 必須の引数を追加
-args = parser.parse_args()  # 4. 引数を解析
+if True:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("feature")  # 必須の引数を追加
+    args = parser.parse_args()  # 4. 引数を解析
 
 # params
 FEATURE = args.feature
-
-SEED = 1994
-
-RNN1 = {
-    "units": 400,
-    "activation": "sigmoid",
-    "use_bias": True,
-    "kernel_initializer": "glorot_uniform",
-    "recurrent_initializer": "orthogonal",
-    "bias_initializer": "zeros",
-    "kernel_regularizer": None,
-    "recurrent_regularizer": None,
-    "bias_regularizer": None,
-    "activity_regularizer": None,
-    "kernel_constraint": None,
-    "recurrent_constraint": None,
-    "bias_constraint": None,
-    "dropout": 0.0,
-    "recurrent_dropout": 0.0,
-    "return_sequences": False,
-    "return_state": False,
-    "go_backwards": False,
-    "stateful": False,
-    "unroll": False,
-}
-
-DENSE = {
-    "units": 3,
-    "activation": "sigmoid",
-    "use_bias": True,
-    "kernel_initializer": "glorot_uniform",
-    "bias_initializer": "zeros",
-    "kernel_regularizer": None,
-    "bias_regularizer": None,
-    "activity_regularizer": None,
-    "kernel_constraint": None,
-    "bias_constraint": None,
-}
-
-ADAM = {
-    "learning_rate": 0.001,
-    "beta_1": 0.9,
-    "beta_2": 0.999,
-    "epsilon": 1e-07,
-    "amsgrad": False,
-    "name": "Adam",
-}
-
+SEED = 2000
+MODEL = "RNN1"
 FIT = {
     "batch_size": 10,
-    "epochs": 100,
+    "epochs": 50,
     "verbose": 2,
     "shuffle": True,
     "class_weight": None,
@@ -77,10 +34,9 @@ FIT = {
     "workers": 1,
     "use_multiprocessing": False,
 }
-
-VAL_SIZE = 0.2
-
+VALSIZE = 0.2
 NFOLDS = -1
+DIRNAME = f"{FEATURE}_{MODEL}"
 
 
 def expand(a_dict):
@@ -94,32 +50,8 @@ def expand(a_dict):
     return result
 
 
-def create_model():
-    # model
-    model = tf.keras.models.Sequential(
-        [tf.keras.layers.SimpleRNN(**RNN1), tf.keras.layers.Dense(**DENSE)]
-    )
-
-    optimizer = tf.keras.optimizers.Adam(**ADAM)
-    loss = tf.losses.BinaryCrossentropy()
-
-    model.compile(
-        optimizer=optimizer,
-        loss=loss,
-        metrics=["accuracy"],
-        loss_weights=None,
-        sample_weight_mode=None,
-        weighted_metrics=None,
-        target_tensors=None,
-        distribute=None,
-    )
-
-    return model
-
-
 def train(X_train, X_valid, Y_train, Y_valid, rpath):
-    # model
-    model = create_model()
+    model = select_model(MODEL)
 
     # set callbacks
     # tb_callback
@@ -144,13 +76,11 @@ def train(X_train, X_valid, Y_train, Y_valid, rpath):
     return model
 
 
-# make logdir from current time
-# now = datetime.datetime.now().strftime("%m%d-%H%M%S")
-now = FEATURE
-os.makedirs(f"./logs/{now}")
+now = datetime.datetime.now().strftime("%m%d-%H%M%S")
+os.makedirs(f"./logs/{DIRNAME}")
 
 # set logging
-logging.basicConfig(filename=f"./logs/{now}/train_{now}.log", level=logging.INFO)
+logging.basicConfig(filename=f"./logs/{DIRNAME}/train_{now}.log", level=logging.INFO)
 logging.info("-----params")
 items = list(globals().items())
 for (symbol, value) in items:
@@ -165,13 +95,12 @@ Y_train_dict = np.load(f"features/{FEATURE}/Y_train.npy", allow_pickle=True)[()]
 X_train_all = expand(X_train_dict)
 Y_train_all = expand(Y_train_dict)
 
-
 if NFOLDS == -1:
 
-    rpath = f"{now}/{-1}"
+    rpath = f"{DIRNAME}/{-1}"
 
     X_train, X_valid, Y_train, Y_valid = train_test_split(
-        X_train_all, Y_train_all, test_size=VAL_SIZE, random_state=SEED
+        X_train_all, Y_train_all, test_size=VALSIZE, random_state=SEED
     )
 
     model = train(X_train, X_valid, Y_train, Y_valid, rpath)
@@ -180,7 +109,7 @@ else:
     kf = KFold(n_splits=NFOLDS, random_state=SEED)
     for k, (train_index, valid_index) in enumerate(kf.split(X_train_all)):
 
-        rpath = f"{now}/{k+1}"
+        rpath = f"{DIRNAME}/{k+1}"
 
         X_train, X_valid = X_train_all[train_index], X_train_all[valid_index]
         Y_train, Y_valid = Y_train_all[train_index], Y_train_all[valid_index]

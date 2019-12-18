@@ -1,5 +1,5 @@
 import random
-
+import argparse
 import numpy as np
 import datetime
 import logging
@@ -9,11 +9,14 @@ import librosa
 
 from lib.data import get_targets
 
+if True:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("feature")
+    args = parser.parse_args()
+
 # params
-SEED = 1234
-
+SEED = 122
 INST = "#MIX"
-
 AUDIO = {
     "sr": 44100,
     "mono": True,
@@ -22,7 +25,6 @@ AUDIO = {
     "dtype": np.float32,
     "res_type": "kaiser_best",
 }
-
 STFT = {
     "n_fft": 2048,
     "hop_length": 512,
@@ -32,18 +34,14 @@ STFT = {
     "dtype": np.complex64,
     "pad_mode": "reflect",
 }
-
 SEG = {"seg_width": 100, "seg_step": 10}
-
-FEATURE = "m"
-
+FEATURE = args.feature
 NORMALIZE = "z"
-
-NAMEMODE = "rtw"
-
-NAME = "TEST1"
-
-N_TEST = 20
+AUDIOTYPE = "r"
+PREFIX = "F"
+LAST = False
+NTEST = 4
+DIRNAME = f"{PREFIX}_{FEATURE}"
 
 
 def deviation(x, foward=False):
@@ -228,17 +226,18 @@ def make_segments(arr, seg_width, seg_step):
     return segments
 
 
-# make save dir from current time
 now = datetime.datetime.now().strftime("%m%d-%H%M%S")
-if True:
-    now = NAME
-os.makedirs(f"./features/{now}")
+os.makedirs(f"./features/{DIRNAME}")
 
 # set logging
-logging.basicConfig(filename=f"./features/{now}/feature_{now}.log", level=logging.INFO)
+logging.basicConfig(
+    filename=f"./features/{DIRNAME}/feature_{now}.log", level=logging.INFO
+)
 
 # save params
-logging.basicConfig(filename=f"./features/{now}/feature_{now}.log", level=logging.INFO)
+logging.basicConfig(
+    filename=f"./features/{DIRNAME}/feature_{now}.log", level=logging.INFO
+)
 logging.info("-----params")
 items = list(globals().items())
 for (symbol, value) in items:
@@ -249,9 +248,9 @@ for (symbol, value) in items:
 
 # make train test namelist
 random.seed(SEED)
-namelist = make_namelist(mode=NAMEMODE)
+namelist = make_namelist(mode=AUDIOTYPE)
 
-testlist = random.sample(namelist, N_TEST)
+testlist = random.sample(namelist, NTEST)
 trainlist = list(set(namelist) - set(testlist))
 
 # select feature and normalize func
@@ -273,7 +272,9 @@ for name in trainlist:
 
     # make segments
     X = make_segments(X, **SEG)
-    Y = make_segments(Y, **SEG)[:, -1, :]
+    Y = make_segments(Y, **SEG)
+    if LAST:
+        Y = Y[:, -1, :]
 
     logging.info(X.shape)
     logging.info(Y.shape)
@@ -301,13 +302,10 @@ for name in testlist:
 
 
 # save
-def save(name, arr):
-    path = os.path.join("features", now, name)
-    np.save(path, arr)
+np.save(f"features/{DIRNAME}/X_train", X_train)
+np.save(f"features/{DIRNAME}/Y_train", Y_train)
 
+np.save(f"features/{DIRNAME}/X_test", X_test)
+np.save(f"features/{DIRNAME}/Y_test", Y_test)
 
-save("X_train", X_train)
-save("Y_train", Y_train)
-
-save("X_test", X_test)
-save("Y_test", Y_test)
+logging.info("Done")

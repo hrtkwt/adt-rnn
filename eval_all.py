@@ -5,15 +5,16 @@ import logging
 import numpy as np
 import pandas as pd
 
-from lib.evalutil import peaks, accuracies, get_result_table, get_weights
+from lib.evalutil import peaks, accuracies, get_result_table
 from lib.plot import save_spec, save_Y
+import tensorflow as tf
 
-FEATURE = "C_m_acd_10"
-TRAIN = "C_n_hidden_400_m_acd_10"
+# from lib.models import select_model
+
+FEATURE = "E_gamma"
+MODEL = "RNN1"
 FOLD = -1
-EPOCH = 77
-
-
+EPOCH = 10
 PEAK = {
     "pre_max": 3,
     "post_max": 3,
@@ -22,19 +23,17 @@ PEAK = {
     "delta": "all",
     "wait": 2,
 }
-
-NORMALIZE = False
-
 TOLERANCE = {"pre_tolerance": 3, "post_tolerance": 3}
-
 FIG = False
+DIRNAME = f"{FEATURE}_{MODEL}"
 
-# make logdir from current time
 now = datetime.datetime.now().strftime("%m%d-%H%M%S")
-os.makedirs(f"./results/{TRAIN}/fig")
+os.makedirs(f"./results/{DIRNAME}/fig")
 
 # set logging
-logging.basicConfig(filename=f"./results/{TRAIN}/eval_{now}.log", level=logging.INFO)
+logging.basicConfig(
+    filename=f"./results/{DIRNAME}/eval_{now}.log", level=logging.INFO
+)
 logging.info("-----params")
 items = list(globals().items())
 for (symbol, value) in items:
@@ -42,44 +41,13 @@ for (symbol, value) in items:
         logging.info(f"---{symbol}")
         logging.info(value)
 
-# make cp-path
-cp_path = f"logs/{TRAIN}/{FOLD}/cp-{EPOCH:04d}"
-
-# get weights
-weights = get_weights(cp_path)
+# load model
+cp_path = f"logs/{DIRNAME}/{FOLD}/cp-{EPOCH:04d}"
+model = tf.keras.models.load_model(cp_path)
 
 # load test data
 X_test_dict = np.load(f"features/{FEATURE}/X_test.npy", allow_pickle=True)[()]
 Y_test_dict = np.load(f"features/{FEATURE}/Y_test.npy", allow_pickle=True)[()]
-
-
-def apply_zscore(x):
-    return (x - x.mean()) / x.std()
-
-
-def pred(X, Wh, Wr, bh, Wo, bo):
-    def sigmoid(z):
-        return 1 / (1 + np.exp(-z))
-
-    def feed_forward(x, h_):
-        zh = np.dot(x, Wh) + np.dot(h_, Wr) + bh
-        h = sigmoid(zh)
-
-        zo = np.dot(h, Wo) + bo
-        y = sigmoid(zo)
-
-        return y, h
-
-    x0 = X[0]
-    h0 = np.zeros(bh.shape)
-
-    Y, h = feed_forward(x0, h0)
-
-    for x in X[1:]:
-        y, h = feed_forward(x, h)
-        Y = np.vstack((Y, y))
-
-    return Y
 
 
 def eval(name):
@@ -87,21 +55,18 @@ def eval(name):
     X_test = X_test_dict[name]
     Y_test = Y_test_dict[name]
 
-    if NORMALIZE is True:
-        X_test = apply_zscore(X_test)
-
     # pred
-    Y_pred = pred(X_test, *weights)
+    Y_pred = model(X_test[np.newaxis, :, :])[0].numpy()
 
     # peak_picking
     Y_peak = peaks(Y_pred, **PEAK)
 
     # serialize image
     if FIG is True:
-        save_spec(X_test, now, name, "X_test")
-        save_Y(Y_pred, now, name, "pred")
-        save_Y(Y_peak, now, name, "peak")
-        save_Y(Y_test, now, name, "gt")
+        save_spec(X_test, f"{DIRNAME}", name, "X_test")
+        save_Y(Y_pred, f"{DIRNAME}", name, "pred")
+        save_Y(Y_peak, f"{DIRNAME}", name, "peak")
+        save_Y(Y_test, f"{DIRNAME}", name, "gt")
 
     # eval
     result = accuracies(Y_test, Y_peak, **TOLERANCE)
@@ -136,7 +101,7 @@ if PEAK["delta"] == "all":
         result_table.loc[(thres)] = eval_at(thres)
 
     print(result_table)
-    result_table.to_csv(f"results/{TRAIN}/{TRAIN}.csv")
+    result_table.to_csv(f"results/{DIRNAME}/{FEATURE}_{MODEL}.csv")
 
 else:
     test_names = X_test_dict.keys()
@@ -149,4 +114,4 @@ else:
 
     print(result_table)
 
-    result_table.to_csv(f"results/{TRAIN}/{TRAIN}.csv")
+    result_table.to_csv(f"results/{DIRNAME}/{FEATURE}_{MODEL}.csv")
