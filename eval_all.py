@@ -1,6 +1,7 @@
 import os
 import datetime
 import logging
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -9,12 +10,16 @@ from lib.evalutil import peaks, accuracies, get_result_table
 from lib.plot import save_spec, save_Y
 import tensorflow as tf
 
-# from lib.models import select_model
+if True:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("feature")  # 必須の引数を追加
+    parser.add_argument("epoch")
+    args = parser.parse_args()  # 4. 引数を解析
 
-FEATURE = "E_gamma"
+FEATURE = args.feature
 MODEL = "RNN1"
 FOLD = -1
-EPOCH = 10
+EPOCH = int(args.epoch)
 PEAK = {
     "pre_max": 3,
     "post_max": 3,
