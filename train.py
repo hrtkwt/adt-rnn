@@ -7,7 +7,7 @@ import argparse
 
 import numpy as np
 import tensorflow as tf
-from sklearn.model_selection import train_test_split, KFold
+# from sklearn.model_selection import train_test_split, KFold
 from lib.models import select_model
 
 if True:
@@ -21,7 +21,7 @@ SEED = 2000
 MODEL = "RNN1"
 FIT = {
     "batch_size": 10,
-    "epochs": 50,
+    "epochs": 20,
     "verbose": 2,
     "shuffle": True,
     "class_weight": None,
@@ -92,26 +92,27 @@ for (symbol, value) in items:
 X_train_dict = np.load(f"features/{FEATURE}/X_train.npy", allow_pickle=True)[()]
 Y_train_dict = np.load(f"features/{FEATURE}/Y_train.npy", allow_pickle=True)[()]
 
-X_train_all = expand(X_train_dict)
-Y_train_all = expand(Y_train_dict)
+X_train = expand(X_train_dict)
+Y_train = expand(Y_train_dict)
+
+X_valid_dict = np.load(f"features/{FEATURE}/X_valid.npy", allow_pickle=True)[()]
+Y_valid_dict = np.load(f"features/{FEATURE}/Y_valid.npy", allow_pickle=True)[()]
+
+X_valid = expand(X_valid_dict)
+Y_valid = expand(Y_valid_dict)
 
 if NFOLDS == -1:
 
     rpath = f"{DIRNAME}/{-1}"
-
-    X_train, X_valid, Y_train, Y_valid = train_test_split(
-        X_train_all, Y_train_all, test_size=VALSIZE, random_state=SEED
-    )
-
     model = train(X_train, X_valid, Y_train, Y_valid, rpath)
 
-else:
-    kf = KFold(n_splits=NFOLDS, random_state=SEED)
-    for k, (train_index, valid_index) in enumerate(kf.split(X_train_all)):
+# else:
+#     kf = KFold(n_splits=NFOLDS, random_state=SEED)
+#     for k, (train_index, valid_index) in enumerate(kf.split(X_train_all)):
 
-        rpath = f"{DIRNAME}/{k+1}"
+#         rpath = f"{DIRNAME}/{k+1}"
 
-        X_train, X_valid = X_train_all[train_index], X_train_all[valid_index]
-        Y_train, Y_valid = Y_train_all[train_index], Y_train_all[valid_index]
+#         X_train, X_valid = X_train_all[train_index], X_train_all[valid_index]
+#         Y_train, Y_valid = Y_train_all[train_index], Y_train_all[valid_index]
 
-        model = train(X_train, X_valid, Y_train, Y_valid, rpath)
+#         model = train(X_train, X_valid, Y_train, Y_valid, rpath)

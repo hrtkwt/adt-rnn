@@ -5,9 +5,9 @@ run1() {
 }
 
 run2() {
-    python train.py F_m
-    python train.py F_acd
-    python train.py F_gamma
+#    python train.py G_m
+    python train.py G_acd
+    python train.py G_gamma
 }
 
 run3() {

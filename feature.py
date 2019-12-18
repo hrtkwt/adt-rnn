@@ -38,9 +38,10 @@ SEG = {"seg_width": 100, "seg_step": 10}
 FEATURE = args.feature
 NORMALIZE = "z"
 AUDIOTYPE = "r"
-PREFIX = "F"
+PREFIX = "G"
 LAST = False
-NTEST = 4
+NVALID = 3
+NTEST = 3
 DIRNAME = f"{PREFIX}_{FEATURE}"
 
 
@@ -253,6 +254,9 @@ namelist = make_namelist(mode=AUDIOTYPE)
 testlist = random.sample(namelist, NTEST)
 trainlist = list(set(namelist) - set(testlist))
 
+validlist = random.sample(trainlist, NVALID)
+trainlist = list(set(trainlist) - set(validlist))
+
 # select feature and normalize func
 feature = select_func_feature(FEATURE)
 normalize = select_func_normalize(NORMALIZE)
@@ -282,6 +286,30 @@ for name in trainlist:
     X_train[name] = X
     Y_train[name] = Y
 
+# make train dataset
+logging.info("-----valid-----")
+
+X_valid = dict()
+Y_valid = dict()
+
+for name in validlist:
+    logging.info(name)
+
+    X, Y = feature(name)
+    X = normalize(X)
+
+    # make segments
+    X = make_segments(X, **SEG)
+    Y = make_segments(Y, **SEG)
+    if LAST:
+        Y = Y[:, -1, :]
+
+    logging.info(X.shape)
+    logging.info(Y.shape)
+
+    X_valid[name] = X
+    Y_valid[name] = Y
+
 # make test dataset
 logging.info("-----test-----")
 
@@ -304,6 +332,9 @@ for name in testlist:
 # save
 np.save(f"features/{DIRNAME}/X_train", X_train)
 np.save(f"features/{DIRNAME}/Y_train", Y_train)
+
+np.save(f"features/{DIRNAME}/X_valid", X_valid)
+np.save(f"features/{DIRNAME}/Y_valid", Y_valid)
 
 np.save(f"features/{DIRNAME}/X_test", X_test)
 np.save(f"features/{DIRNAME}/Y_test", Y_test)
