@@ -24,7 +24,9 @@ def train(X_train, X_valid, Y_train, Y_valid):
 
     # tb_callback
     logdir = f"logs/{DIRNAME}/{-1}"
-    tb_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
+    tb_callback = tf.keras.callbacks.TensorBoard(
+        log_dir=logdir, histogram_freq=1, write_images=True
+    )
 
     # cp_callback
     cp_path = f"logs/{DIRNAME}/{-1}" + "/cp-{epoch:04d}"
