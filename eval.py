@@ -2,11 +2,13 @@ import os
 import datetime
 import logging
 import argparse
+import io
 
 import numpy as np
 import pandas as pd
 import librosa
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 
 def peak(activation, pre_max, post_max, pre_avg, post_avg, delta, wait):
@@ -33,7 +35,7 @@ def peaks(Y_activations, **kwargs):
     return Y_peak
 
 
-def get_metrics(Y_annotation, Y_pred, pre_tolerance, post_tolerance):
+def get_prf(Y_annotation, Y_pred, pre_tolerance, post_tolerance):
     """
     Variables
     ----------
@@ -126,15 +128,15 @@ def eval_at(thres, name):
     # peak_picking
     Y_peak = peaks(Y_pred, delta=thres, **PEAK)
 
-    metrics = get_metrics(Y_test[:, 0], Y_peak[:, 0], **TOLERANCE)
+    metrics = get_prf(Y_test[:, 0], Y_peak[:, 0], **TOLERANCE)
     bce = get_bce(Y_test[:, 0], Y_pred[:, 0])
     HH = metrics + (bce,)
 
-    metrics = get_metrics(Y_test[:, 1], Y_peak[:, 1], **TOLERANCE)
+    metrics = get_prf(Y_test[:, 1], Y_peak[:, 1], **TOLERANCE)
     bce = get_bce(Y_test[:, 1], Y_pred[:, 1])
     SD = metrics + (bce,)
 
-    metrics = get_metrics(Y_test[:, 2], Y_peak[:, 2], **TOLERANCE)
+    metrics = get_prf(Y_test[:, 2], Y_peak[:, 2], **TOLERANCE)
     bce = get_bce(Y_test[:, 2], Y_pred[:, 2])
     KD = metrics + (bce,)
 
@@ -148,12 +150,12 @@ def eval_at(thres, name):
         "Precision",
         "Recall",
         "F-measure",
-        "bce"
+        "bce",
     ] * 3
 
     result = pd.Series(HH + SD + KD, index=[index1, index2])
     result.name = (thres, name)
-    
+
     return result
 
 
@@ -168,6 +170,73 @@ def eval_all(thres_list, test_names):
 
     dfs = [eval_names_at(thres) for thres in thres_list]
     return pd.concat(dfs, axis=0)
+
+
+def fig(name, i):
+    def plot_to_image(figure):
+        """Converts the matplotlib plot specified by 'figure' to a PNG image and
+        returns it. The supplied figure is closed and inaccessible after this call."""
+        # Save the plot to a PNG in memory.
+        buf = io.BytesIO()
+        plt.savefig(buf, format="png")
+        # Closing the figure prevents it from being displayed directly inside
+        # the notebook.
+        plt.close(figure)
+        buf.seek(0)
+        # Convert PNG buffer to TF image
+        image = tf.image.decode_png(buf.getvalue(), channels=4)
+        # Add the batch dimension
+        image = tf.expand_dims(image, 0)
+        return image
+
+    def spec(X_test):
+        """Return a 5x5 grid of the MNIST images as a matplotlib figure."""
+        # Create a figure to contain the plot.
+        figure = plt.figure(figsize=(10, 10))
+        plt.title(name)
+        plt.xlabel("time")
+        plt.ylabel("freq")
+        plt.grid(False)
+        plt.imshow(X_test.T[::-1])
+        plt.colorbar()
+
+        return figure
+
+    def activation(Y):
+        figure = plt.figure(figsize=(10, 5))
+        plt.title(name)
+        plt.xlabel("time")
+        plt.plot(Y[:, 0], color="b")
+        plt.plot(Y[:, 1], color="g")
+        plt.plot(Y[:, 2], color="r")
+
+        return figure
+
+    X_test = X_test_dict[name]
+    Y_test = Y_test_dict[name]
+    Y_pred = model(X_test[np.newaxis, :, :])[0].numpy()
+    Y_peak = peaks(Y_pred, delta=0.05, **PEAK)
+
+    logdir = f"logs/{DIRNAME}/{-1}/test"
+    # Creates a file writer for the log directory.
+    file_writer = tf.summary.create_file_writer(logdir)
+
+    # Prepare the plot
+    fig = spec(X_test)
+    with file_writer.as_default():
+        tf.summary.image("X_test", plot_to_image(fig), step=i)
+
+    fig = activation(Y_test)
+    with file_writer.as_default():
+        tf.summary.image("Y_test", plot_to_image(fig), step=i)
+
+    fig = activation(Y_pred)
+    with file_writer.as_default():
+        tf.summary.image("Y_pred", plot_to_image(fig), step=i)
+
+    fig = activation(Y_peak)
+    with file_writer.as_default():
+        tf.summary.image("Y_peak", plot_to_image(fig), step=i)
 
 
 if __name__ == "__main__":
@@ -189,7 +258,7 @@ if __name__ == "__main__":
     DIRNAME = f"{FEATURE}_{MODEL}"
 
     now = datetime.datetime.now().strftime("%m%d-%H%M%S")
-    os.makedirs(f"./results/{DIRNAME}/fig")
+    os.makedirs(f"./results/{DIRNAME}/")
 
     # set logging
     logging.basicConfig(
@@ -218,3 +287,8 @@ if __name__ == "__main__":
 
     # save
     result.to_csv(f"results/{DIRNAME}/{FEATURE}_{MODEL}.csv")
+
+    for name in test_names:
+        i = 0
+        fig(name, i)
+        i += 1
