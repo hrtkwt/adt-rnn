@@ -33,7 +33,7 @@ def peaks(Y_activations, **kwargs):
     return Y_peak
 
 
-def accuracy(Y_annotation, Y_pred, pre_tolerance, post_tolerance):
+def get_metrics(Y_annotation, Y_pred, pre_tolerance, post_tolerance):
     """
     Variables
     ----------
@@ -51,7 +51,6 @@ def accuracy(Y_annotation, Y_pred, pre_tolerance, post_tolerance):
     Y_pred[i] == 0 (predicted onset)
 
     """
-
     tp = 0
     fn = 0
     fp = 0
@@ -112,32 +111,9 @@ def accuracy(Y_annotation, Y_pred, pre_tolerance, post_tolerance):
     )
 
 
-def accuracies(Y_true, Y_peak, **kwargs):
-    metrics_names = [
-        "TP",
-        "FP",
-        "FN",
-        "TP+FP",
-        "TP+FN",
-        "Precision",
-        "Recall",
-        "F-measure",
-    ]
-    inst_names = ["HH", "SD", "KD"]
-
-    metrics_HH = accuracy(Y_true[:, 0], Y_peak[:, 0], **kwargs)
-    metrics_SD = accuracy(Y_true[:, 1], Y_peak[:, 1], **kwargs)
-    metrics_KD = accuracy(Y_true[:, 2], Y_peak[:, 2], **kwargs)
-
-    metrics = metrics_HH + metrics_SD + metrics_KD
-
-    n_metrics = len(metrics_names)
-    n_inst = len(inst_names)
-
-    index1 = ["HH"] * n_metrics + ["SD"] * n_metrics + ["KD"] * n_metrics
-    index2 = metrics_names * n_inst
-
-    return pd.Series(metrics, index=[index1, index2])
+def get_bce(Y_true, Y_pred):
+    bce = tf.losses.BinaryCrossentropy()(Y_true, Y_pred)
+    return round(bce.numpy(), 4)
 
 
 def eval_at(thres, name):
@@ -150,9 +126,34 @@ def eval_at(thres, name):
     # peak_picking
     Y_peak = peaks(Y_pred, delta=thres, **PEAK)
 
-    # eval
-    result = accuracies(Y_test, Y_peak, **TOLERANCE)
+    metrics = get_metrics(Y_test[:, 0], Y_peak[:, 0], **TOLERANCE)
+    bce = get_bce(Y_test[:, 0], Y_pred[:, 0])
+    HH = metrics + (bce,)
+
+    metrics = get_metrics(Y_test[:, 1], Y_peak[:, 1], **TOLERANCE)
+    bce = get_bce(Y_test[:, 1], Y_pred[:, 1])
+    SD = metrics + (bce,)
+
+    metrics = get_metrics(Y_test[:, 2], Y_peak[:, 2], **TOLERANCE)
+    bce = get_bce(Y_test[:, 2], Y_pred[:, 2])
+    KD = metrics + (bce,)
+
+    index1 = ["HH"] * 9 + ["SD"] * 9 + ["KD"] * 9
+    index2 = [
+        "TP",
+        "FP",
+        "FN",
+        "TP+FP",
+        "TP+FN",
+        "Precision",
+        "Recall",
+        "F-measure",
+        "bce"
+    ] * 3
+
+    result = pd.Series(HH + SD + KD, index=[index1, index2])
     result.name = (thres, name)
+    
     return result
 
 
