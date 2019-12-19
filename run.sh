@@ -1,25 +1,29 @@
 feature() {
-    python feature.py m
-    python feature.py acd
-    python feature.py md
-    python feature.py m_md
-    python feature.py m_acd
+    prefix="O"
+    seed="12345678"
+    python feature.py "$prefix" m "$seed"
+    python feature.py "$prefix" acd "$seed"
+    python feature.py "$prefix" md "$seed"
+    python feature.py "$prefix" m_md "$seed"
+    python feature.py "$prefix" m_acd "$seed"
 }
 
 train() {
-    python train.py M_m base_1025
-    python train.py M_acd base_1025
-    python train.py M_md base_1025
-    python train.py M_m_md base_2050
-    python train.py M_m_acd base_2050
+    prefix="O"
+    python train.py "${prefix}_m" base_1025
+    python train.py "${prefix}_acd" base_1025
+    python train.py "${prefix}_md" base_1025
+    python train.py "${prefix}_m_md" base_2050
+    python train.py "${prefix}_m_acd" base_2050
 }
 
 eval() {
-    python eval_all.py L_m base_1025 4
-    python eval_all.py L_acd base_1025 6
-    python eval_all.py L_md base_1025 3
-    python eval_all.py L_m_md base_2050 2
-    python eval_all.py L_m_acd base_2050 3
+    prefix="O"
+    python eval.py "${prefix}_m" base_1025 4
+    python eval.py "${prefix}_acd" base_1025 6
+    python eval.py "${prefix}_md" base_1025 3
+    python eval.py "${prefix}_m_md" base_2050 2
+    python eval.py "${prefix}_m_acd" base_2050 3
 }
 
 
