@@ -13,11 +13,12 @@ import tensorflow as tf
 if True:
     parser = argparse.ArgumentParser()
     parser.add_argument("feature")  # 必須の引数を追加
+    parser.add_argument("model")
     parser.add_argument("epoch")
     args = parser.parse_args()  # 4. 引数を解析
 
 FEATURE = args.feature
-MODEL = "RNN1"
+MODEL = args.model
 FOLD = -1
 EPOCH = int(args.epoch)
 PEAK = {

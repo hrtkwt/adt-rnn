@@ -15,7 +15,7 @@ if True:
     args = parser.parse_args()
 
 # params
-SEED = 1218
+SEED = 12181135
 INST = "#MIX"
 AUDIO = {
     "sr": 44100,
@@ -34,11 +34,11 @@ STFT = {
     "dtype": np.complex64,
     "pad_mode": "reflect",
 }
-SEG = {"seg_width": 100, "seg_step": 10}
+SEG = {"seg_width": 100, "seg_step": 50}
 FEATURE = args.feature
 NORMALIZE = "z"
 AUDIOTYPE = "r"
-PREFIX = "L"
+PREFIX = "M"
 LAST = False
 NVALID = 3
 NTEST = 3

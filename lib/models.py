@@ -101,7 +101,7 @@ def create_base_2050():
                 go_backwards=False,
                 stateful=False,
                 unroll=False,
-                input_shape=(None, 1025)
+                input_shape=(None, 2050)
             ),
             tf.keras.layers.Dense(
                 units=3,

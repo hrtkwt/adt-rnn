@@ -7,17 +7,19 @@ feature() {
 }
 
 train() {
-    python train.py L_m base_1025
-    python train.py L_acd base_1025
-    python train.py L_md base_1025
-    python train.py L_m_md base_2050
-    python train.py L_m_acd base_2050
+    python train.py M_m base_1025
+    python train.py M_acd base_1025
+    python train.py M_md base_1025
+    python train.py M_m_md base_2050
+    python train.py M_m_acd base_2050
 }
 
 eval() {
-    python eval_all.py K_m 6
-    python eval_all.py K_acd 5
-    python eval_all.py K_md 5
+    python eval_all.py L_m base_1025 4
+    python eval_all.py L_acd base_1025 6
+    python eval_all.py L_md base_1025 3
+    python eval_all.py L_m_md base_2050 2
+    python eval_all.py L_m_acd base_2050 3
 }
 
 
