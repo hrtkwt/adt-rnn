@@ -15,7 +15,7 @@ if True:
     args = parser.parse_args()
 
 # params
-SEED = 1919
+SEED = 1218
 INST = "#MIX"
 AUDIO = {
     "sr": 44100,
@@ -38,7 +38,7 @@ SEG = {"seg_width": 100, "seg_step": 10}
 FEATURE = args.feature
 NORMALIZE = "z"
 AUDIOTYPE = "r"
-PREFIX = "K"
+PREFIX = "L"
 LAST = False
 NVALID = 3
 NTEST = 3

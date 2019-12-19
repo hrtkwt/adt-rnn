@@ -12,13 +12,14 @@ from lib.models import select_model
 
 if True:
     parser = argparse.ArgumentParser()
-    parser.add_argument("feature")  # 必須の引数を追加
-    args = parser.parse_args()  # 4. 引数を解析
+    parser.add_argument("feature")
+    parser.add_argument("model")
+    args = parser.parse_args()
 
 # params
 FEATURE = args.feature
 SEED = 2000
-MODEL = "RNN1"
+MODEL = args.model
 FIT = {
     "batch_size": 10,
     "epochs": 12,
@@ -34,7 +35,6 @@ FIT = {
     "workers": 1,
     "use_multiprocessing": False,
 }
-VALSIZE = 0.2
 NFOLDS = -1
 DIRNAME = f"{FEATURE}_{MODEL}"
 
