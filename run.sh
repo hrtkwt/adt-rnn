@@ -1,6 +1,6 @@
 feature() {
-    prefix="P"
-    seed="389098"
+    prefix="Q"
+    seed="3098"
     python feature.py "$prefix" m "$seed"
     python feature.py "$prefix" acd "$seed"
     python feature.py "$prefix" md "$seed"
@@ -9,7 +9,7 @@ feature() {
 }
 
 train() {
-    prefix="P"
+    prefix="Q"
     python train.py "${prefix}_m" base_1025
     python train.py "${prefix}_acd" base_1025
     python train.py "${prefix}_md" base_1025
