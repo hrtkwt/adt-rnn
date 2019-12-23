@@ -1,6 +1,6 @@
 feature() {
-    prefix="Q"
-    seed="3098"
+    prefix="S"
+    seed="777777"
     python feature.py "$prefix" m "$seed"
     python feature.py "$prefix" acd "$seed"
     python feature.py "$prefix" md "$seed"
@@ -9,7 +9,7 @@ feature() {
 }
 
 train() {
-    prefix="Q"
+    prefix="S"
     python train.py "${prefix}_m" base_1025
     python train.py "${prefix}_acd" base_1025
     python train.py "${prefix}_md" base_1025
@@ -18,12 +18,12 @@ train() {
 }
 
 eval() {
-    prefix="P"
-    python eval.py "${prefix}_m" base_1025 4
-    python eval.py "${prefix}_acd" base_1025 6
-    python eval.py "${prefix}_md" base_1025 3
-    python eval.py "${prefix}_m_md" base_2050 2
-    python eval.py "${prefix}_m_acd" base_2050 3
+    prefix="R"
+    python eval.py "${prefix}_m" base_1025 25
+    python eval.py "${prefix}_acd" base_1025 21
+    python eval.py "${prefix}_md" base_1025 15
+    python eval.py "${prefix}_m_md" base_2050 15
+    python eval.py "${prefix}_m_acd" base_2050 15
 }
 
 
