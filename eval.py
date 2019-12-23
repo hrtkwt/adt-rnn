@@ -202,13 +202,31 @@ def fig(name, i):
 
         return figure
 
-    def activation(Y):
-        figure = plt.figure(figsize=(10, 5))
-        plt.title(name)
+    def activation(inst):
+        if inst == "HH":
+            i = 0
+            color = "b"
+        elif inst == "SD":
+            i = 1
+            color = "g"
+        elif inst == "KD":
+            i = 2
+            color = "r"
+
+        figure = plt.figure(figsize=(15, 5))
+        plt.subplot(311)
         plt.xlabel("time")
-        plt.plot(Y[:, 0], color="b")
-        plt.plot(Y[:, 1], color="g")
-        plt.plot(Y[:, 2], color="r")
+        plt.ylim((0, 1.0))
+        plt.title(name)
+        plt.plot(Y_test[:, i], color=color)
+        plt.subplot(312)
+        plt.xlabel("time")
+        plt.ylim((0, 1.0))
+        plt.plot(Y_pred[:, i], color=color)
+        plt.subplot(313)
+        plt.xlabel("time")
+        plt.ylim((0, 1.0))
+        plt.plot(Y_peak[:, i], color=color)
 
         return figure
 
@@ -224,19 +242,19 @@ def fig(name, i):
     # Prepare the plot
     fig = spec(X_test)
     with file_writer.as_default():
-        tf.summary.image("X_test", plot_to_image(fig), step=i)
+        tf.summary.image("feature", plot_to_image(fig), i)
 
-    fig = activation(Y_test)
+    fig = activation("HH")
     with file_writer.as_default():
-        tf.summary.image("Y_test", plot_to_image(fig), step=i)
+        tf.summary.image("HH", plot_to_image(fig), i)
 
-    fig = activation(Y_pred)
+    fig = activation("SD")
     with file_writer.as_default():
-        tf.summary.image("Y_pred", plot_to_image(fig), step=i)
+        tf.summary.image("SD", plot_to_image(fig), i)
 
-    fig = activation(Y_peak)
+    fig = activation("KD")
     with file_writer.as_default():
-        tf.summary.image("Y_peak", plot_to_image(fig), step=i)
+        tf.summary.image("KD", plot_to_image(fig), i)
 
 
 if __name__ == "__main__":
@@ -288,7 +306,5 @@ if __name__ == "__main__":
     # save
     result.to_csv(f"results/{DIRNAME}/{FEATURE}_{MODEL}.csv")
 
-    for name in test_names:
-        i = 0
+    for i, name in enumerate(test_names):
         fig(name, i)
-        i += 1
